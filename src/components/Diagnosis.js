@@ -33,112 +33,83 @@ function Diagnosis() {
 
   return (
     <Container>
-      <Grid container spacing={4} justifyContent="center">
-        <Grid item xs={12} md={6}>
-          {/* Uploaded image(s) */}
-          {uploadedImages &&
-            uploadedImages.map((image, index) => (
-              <Paper
-                key={index}
-                elevation={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  // width: "100%", // Set width to 100% to fill the container
-                  maxHeight: "auto", // Adjust height to be automatic
-                  overflow: "hidden",
-                  m: 2,
-                  backgroundColor: "transparent",
-                  // border: "1px solid #00A79D",
-                }}
-              >
-                <img
-                  src={`data:image/png;base64,${image.url}`}
-                  alt={`Uploaded ${index}`}
-                  style={{
-                    width: "auto", // Max width to 100% to fill the paper
-                    maxHeight: "65vh", // Adjust height to be automatic
-                  }}
-                />
-              </Paper>
-            ))}
-        </Grid>
-        <Grid item xs={12} md={6}>
+      <Grid container spacing={3} alignItems="center" justifyContent="center">
+        <Grid item container xs={12} spacing={3}>
+          {/* Original Image */}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="subtitle1" gutterBottom align="center">
+              Original Image
+            </Typography>
+            <Paper
+              elevation={2}
+              sx={{
+                overflow: "hidden",
+                padding: 1,
+                backgroundColor: "transparent",
+              }}
+            >
+              <img
+                src={`data:image/png;base64,${uploadedImages[0].url}`}
+                alt="Original"
+                style={{ width: "100%", maxHeight: "57vh", height: "auto" }}
+              />
+            </Paper>
+          </Grid>
           {/* Localization image */}
-          <Paper
-            elevation={2}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              // width: "100%", // Set width to 100% to fill the container
-              height: "auto", // Adjust height to be automatic
-              overflow: "hidden",
-              m: 2,
-              backgroundColor: "#transparent",
-              // border: "1px solid #00A79D",
-            }}
-          >
-            {/* Render the Grad-CAM image */}
-            {result.gradcam && (
+          <Grid item xs={12} sm={4}>
+            <Typography variant="subtitle1" gutterBottom align="center">
+              Localized Lesion
+            </Typography>
+            <Paper
+              elevation={2}
+              sx={{
+                overflow: "hidden",
+                padding: 1,
+                backgroundColor: "transparent",
+              }}
+            >
               <img
                 src={`data:image/png;base64,${result.gradcam}`}
-                alt="Localization"
-                style={{
-                  // maxWidth: "100%", // Max width to 100% to fill the paper
-                  maxHeight: "100%", // Adjust max height to be 100%
-                  height: "auto", // Adjust height to be automatic
-                }}
+                alt="Localized Lesion"
+                style={{ width: "100%", height: "auto" }}
               />
-            )}
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <FormControl variant="standard" fullWidth>
-            <InputLabel id="demo-simple-select-standard-label">
-              Select the task:
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-standard-label"
-              id="demo-simple-select-standard"
-              value={selectedImage}
-              onChange={handleChange}
-              label="Image Type"
-            >
-              <MenuItem value="processed_original_image">
-                Original Lesion
-              </MenuItem>
-              <MenuItem value="processed_mask_image">Processed Lesion</MenuItem>
-            </Select>
-          </FormControl>
-
-          {/* Display selected image */}
-          <Paper
-            elevation={2}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              // width: "100%",
-              height: "auto",
-              overflow: "hidden",
-              m: 2,
-              backgroundColor: "transparent",
-              // border: "1px solid #00A79D",
-            }}
-          >
-            <img
-              src={`data:image/png;base64,${result[selectedImage]}`}
-              alt={`${selectedImage} visualization`}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "65vh",
-                height: "auto",
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl variant="standard" fullWidth sx={{ mb: 1 }}>
+              <InputLabel id="demo-simple-select-standard-label">
+                Select the task:
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={selectedImage}
+                onChange={handleChange}
+                label="Image Type"
+              >
+                <MenuItem value="processed_original_image">
+                  Original Lesion
+                </MenuItem>
+                <MenuItem value="processed_mask_image">
+                  Processed Lesion
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <Paper
+              elevation={2}
+              sx={{
+                overflow: "hidden",
+                backgroundColor: "transparent",
+                maxHeight: "57vh",
               }}
-            />
-          </Paper>
+            >
+              <img
+                src={`data:image/png;base64,${result[selectedImage]}`}
+                alt="Processed Lesion"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </Paper>
+          </Grid>
         </Grid>
         {/* Diagnosis Result Card */}
         <Grid item xs={12}>
@@ -148,7 +119,7 @@ function Diagnosis() {
               p: 2,
               backgroundColor: "#00A79D",
               color: "white",
-              mb: 2,
+              mb: 3,
             }}
           >
             {result && (
