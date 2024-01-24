@@ -1,0 +1,391 @@
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  LinearProgress,
+  Box,
+  Stack,
+  Chip,
+  Grid,
+  Container,
+} from "@mui/material";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import { useNavigate } from "react-router-dom";
+
+function UploadCard({ acceptedFiles, setUploadedImages }) {
+  // State to manage file upload progress and status
+  const [fileData, setFileData] = useState({
+    name: "",
+    status: "idle", // can be 'idle', 'uploading', or 'completed'
+    progress: 0,
+  });
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const uploadIntervalRef = useRef();
+
+  const handleFileSelectForUploadCard = (event) => {
+    console.log("handleFileSelectForUploadCard called");
+    const file = event.target.files[0];
+    if (file) {
+      setFileData({
+        name: file.name,
+        status: "uploading",
+        progress: 0,
+        size: file.size,
+      });
+
+      const reader = new FileReader();
+
+      // This event is triggered each time the reading operation is successfully completed.
+      reader.onload = (e) => {
+        console.log("File read successfully!");
+        const base64String = e.target.result;
+        // Now we have the base64 string, let's update the state with this string
+        if (typeof base64String === "string") {
+          const base64ImageContent = base64String.split(",")[1];
+          console.log("Base64 Image Content:", base64ImageContent);
+          setUploadedImages((prevImages) => [
+            ...prevImages,
+            {
+              name: file.name,
+              url: base64ImageContent, // We save the base64 content here
+              type: file.type,
+              size: file.size,
+            },
+          ]);
+          // Here we set the progress to 100 since the load is complete
+          setFileData({ name: file.name, status: "completed", progress: 100 });
+        } else {
+          console.error("FileReader did not return a string.");
+        }
+      };
+
+      // This event is triggered each time the reading operation is aborted.
+      reader.onabort = () => {
+        console.error("File reading was aborted.");
+        setFileData({ name: "", status: "idle", progress: 0 });
+      };
+
+      // This event is triggered each time the reading operation encounters an error.
+      reader.onerror = () => {
+        console.error("Error reading file");
+        setFileData({ name: "", status: "idle", progress: 0 });
+      };
+
+      // This event is triggered while reading the file, reporting the progress periodically.
+      reader.onprogress = (data) => {
+        if (data.lengthComputable) {
+          const progress = Math.round((data.loaded / data.total) * 100);
+          setUploadProgress(progress);
+          setFileData((prevData) => ({ ...prevData, progress: progress }));
+        }
+      };
+
+      // Start reading the file as Data URL (base64)
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setFileData({
+      name: "",
+      status: "idle",
+      progress: 0,
+    });
+    setUploadProgress(0);
+  };
+
+  useEffect(() => {
+    // Capture the value of uploadIntervalRef.current in the effect
+    const intervalId = uploadIntervalRef.current;
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []); // Empty array ensures this only runs on mount and unmount
+
+  return (
+    <Card
+      sx={{
+        backgroundColor:
+          fileData.status === "completed" ? "#0C6872" : "#61C8C4",
+        color: "#00A79D",
+        borderRadius: "1rem",
+        minHeight: "9rem",
+      }}
+    >
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+        }}
+      >
+        {(fileData.status === "idle" || fileData.status === "uploading") && (
+          <>
+            {/* Upload progress UI */}
+            {fileData.status === "uploading" && (
+              <>
+                <LinearProgress
+                  variant="determinate"
+                  value={fileData.progress}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    ".MuiLinearProgress-bar": { backgroundColor: "#0C6872" },
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "2.5rem",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 1,
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "white", textAlign: "center" }}
+                  >
+                    {fileData.name} - {uploadProgress}% Uploading
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "white", textAlign: "center" }}
+                  >
+                    {fileData.size} bytes
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    background: "white",
+                    borderRadius: "0.6rem",
+                    padding: "0.1rem 0.3rem",
+                  }}
+                >
+                  <Typography
+                    onClick={handleCancelUpload}
+                    sx={{ color: "#0C6872", cursor: "pointer" }}
+                  >
+                    Cancel
+                  </Typography>
+                </Box>
+              </>
+            )}
+
+            {/* Click to upload UI */}
+            {fileData.status === "idle" && (
+              <>
+                <FileUploadOutlinedIcon sx={{ color: "white" }} />
+                <Typography
+                  component="label"
+                  sx={{
+                    color: "white",
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                    cursor: "pointer",
+                    margin: "0.5rem",
+                  }}
+                >
+                  Click to upload
+                  <input
+                    type="file"
+                    onChange={handleFileSelectForUploadCard}
+                    hidden
+                  />
+                </Typography>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ flexWrap: "wrap", justifyContent: "center" }}
+                >
+                  {acceptedFiles.map((fileType, idx) => (
+                    <Chip
+                      key={idx}
+                      label={fileType}
+                      size="small"
+                      sx={{
+                        backgroundColor: "white",
+                        color: "#00A79D",
+                        margin: "4px",
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </>
+            )}
+          </>
+        )}
+
+        {fileData.status === "completed" && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row", // Align items horizontally
+              alignItems: "center", // Align items vertically
+              justifyContent: "center",
+              margin: "2rem",
+              gap: "0.5rem",
+            }}
+          >
+            <VerifiedIcon sx={{ color: "#32E886", fontSize: "1.5rem" }} />
+            <Typography
+              variant="body2"
+              sx={{ color: "white", textAlign: "center" }}
+            >
+              {fileData.name} - Upload Complete
+            </Typography>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function UploadSection() {
+  const navigate = useNavigate();
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleDiscoverDiagnosis = async (imageData) => {
+    setIsUploading(true);
+
+    // Use the imageData directly if it's already the base64 string, otherwise extract it
+    const base64Url = imageData.url.startsWith("data:")
+      ? imageData.url.split(",")[1]
+      : imageData.url;
+
+    console.log("Base64 URL:", base64Url);
+
+    const payload = {
+      image: [
+        {
+          url: base64Url,
+          type: imageData.type,
+          size: imageData.size,
+        },
+      ],
+    };
+
+    // Log the payload to confirm it's correct before sending
+    console.log("Payload to send:", payload); // This will format the log for better readability
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/process-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      // Save the base64 image data to sessionStorage
+      sessionStorage.setItem('uploadedImage', JSON.stringify(uploadedImages));
+
+      navigate("/results", {
+        state: { result: result },
+      });
+    } catch (error) {
+      console.error("There was a problem with the file upload:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Update the acceptedFiles to an array of file types
+  const uploadCards = [
+    {
+      title: "Upload Mammogram Images",
+      acceptedFiles: ["JPG", "PNG"],
+    },
+    {
+      title: "Upload Ultrasound Images",
+      acceptedFiles: ["JPG", "PNG"],
+    },
+    {
+      title: "Upload MRI Images",
+      acceptedFiles: ["JPG", "PNG"],
+    },
+    {
+      title: "Upload Histopathological Images",
+      acceptedFiles: ["JPG", "PNG"],
+    },
+  ];
+
+  return (
+    <Container maxWidth="lg">
+      <Grid container spacing={4} alignItems="center" justifyContent="center">
+        {uploadCards.map((card, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              sx={{
+                color: "#0C6872",
+                textAlign: "center",
+                fontWeight: "bold",
+              }}
+            >
+              {card.title}
+            </Typography>
+            <UploadCard
+              key={card.title + index} // Use index or other unique identifier
+              title={card.title}
+              acceptedFiles={card.acceptedFiles}
+              // onFileSelect={handleFileSelectForUploadCard}
+              setUploadedImages={setUploadedImages}
+            />
+          </Grid>
+        ))}
+      </Grid>
+
+      <Box sx={{ textAlign: "center", margin: 8 }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{
+            backgroundColor: "#00A79D",
+            color: "white",
+            padding: "1rem",
+            borderRadius: "1.5rem",
+            "&:hover": {
+              backgroundColor: "#008c87",
+            },
+          }}
+          onClick={() => {
+            const lastImage = uploadedImages[uploadedImages.length - 1];
+            if (lastImage) {
+              handleDiscoverDiagnosis(lastImage);
+            }
+          }}
+          disabled={isUploading || uploadedImages.length === 0}
+        >
+          Discover Your Diagnosis!
+        </Button>
+      </Box>
+    </Container>
+  );
+}
+
+export default UploadSection;
