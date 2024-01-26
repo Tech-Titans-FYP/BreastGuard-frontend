@@ -18,7 +18,7 @@ function App() {
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/trynow" element={<Layout><TryNow /></Layout>} />
           <Route path="/results" element={<Layout><DiagnosisPage /></Layout>} />
-          <Route path="/contact" element={<Layout><ContactForm /></Layout>}/>
+          <Route path="/contactus" element={<Layout><ContactForm /></Layout>}/>
           {/* <Route element={<PrivateRoute />}>
             <Route path="/results" element={<DiagnosisPage />} />
           </Route> */}
