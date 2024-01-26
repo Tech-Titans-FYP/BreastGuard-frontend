@@ -40,7 +40,7 @@ const Header = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary">
+      <AppBar position="sticky" color="primary">
         <Toolbar>
           {isMobile ? (
             <IconButton edge="start" color="inherit" aria-label="menu">
@@ -64,7 +64,7 @@ const Header = () => {
                 <Button color="inherit" onClick={() => handleNavigate('/')}>Home</Button>
                 <Button color="inherit" onClick={() => handleNavigate('/results')}>Results</Button>
                 <Button color="inherit" onClick={() => handleNavigate('/usability')}>Usability</Button>
-                <Button color="inherit" onClick={() => handleNavigate('/manual')}>Manual</Button>
+                <Button color="inherit" onClick={() => handleNavigate('/manual')}>User Manual</Button>
                 <Button color="inherit" onClick={() => handleNavigate('/contact')}>Contact Us</Button>
                 <Button
                   variant="contained"

@@ -11,7 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import homeImage from "../assets/home.jpg"; // Make sure the path is correct
+import homeImage from "../../assets/home.jpg"; // Make sure the path is correct
 
 const styles = {
   paperContainer: {

@@ -379,7 +379,7 @@ function UploadSection() {
         ))}
       </Grid>
 
-      <Box sx={{ textAlign: "center", margin: 8 }}>
+      <Box sx={{ textAlign: "center", margin: 5 }}>
         <Button
           variant="contained"
           size="large"
