@@ -318,7 +318,7 @@ function UploadSection() {
       // Save the base64 image data to sessionStorage
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
 
-      navigate("/results", {
+      navigate("/diagnosis", {
         state: { result: result },
       });
     } catch (error) {
