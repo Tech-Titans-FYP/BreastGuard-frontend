@@ -15,7 +15,7 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { useNavigate } from "react-router-dom";
 
-function UploadCard({ acceptedFiles, setUploadedImages }) {
+function UploadCard({ acceptedFiles, setUploadedImages, customType }) {
   // State to manage file upload progress and status
   const [fileData, setFileData] = useState({
     name: "",
@@ -51,8 +51,8 @@ function UploadCard({ acceptedFiles, setUploadedImages }) {
             ...prevImages,
             {
               name: file.name,
-              url: base64ImageContent, // We save the base64 content here
-              type: file.type,
+              url: base64ImageContent,
+              type: customType, // use customType instead of file.type
               size: file.size,
             },
           ]);
@@ -206,6 +206,7 @@ function UploadCard({ acceptedFiles, setUploadedImages }) {
                     type="file"
                     onChange={handleFileSelectForUploadCard}
                     hidden
+                    accept=".png, .jpg, .jpeg"
                   />
                 </Typography>
                 <Stack
@@ -261,7 +262,11 @@ function UploadSection() {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleDiscoverDiagnosis = async (imageData) => {
+  const handleUploadMammogram = async (imageData) => {
+    // if image type is mammogram then do, navigate to the /results page and print the result
+  };
+
+  const handleUploadUltrasound = async (imageData) => {
     setIsUploading(true);
 
     // Use the imageData directly if it's already the base64 string, otherwise extract it
@@ -285,13 +290,16 @@ function UploadSection() {
     console.log("Payload to send:", payload); // This will format the log for better readability
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/process-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/process-us-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
@@ -301,7 +309,7 @@ function UploadSection() {
       console.log(result);
 
       // Save the base64 image data to sessionStorage
-      sessionStorage.setItem('uploadedImage', JSON.stringify(uploadedImages));
+      sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
 
       navigate("/results", {
         state: { result: result },
@@ -313,23 +321,35 @@ function UploadSection() {
     }
   };
 
+  const handleUploadMRI = async (imageData) => {
+    // ........
+  };
+
+  const handleUploadHistopathological = async (imageData) => {
+    // ........
+  };
+
   // Update the acceptedFiles to an array of file types
   const uploadCards = [
     {
       title: "Upload Mammogram Images",
       acceptedFiles: ["JPG", "PNG"],
+      type: "mammogram",
     },
     {
       title: "Upload Ultrasound Images",
       acceptedFiles: ["JPG", "PNG"],
+      type: "ultrasound",
     },
     {
       title: "Upload MRI Images",
       acceptedFiles: ["JPG", "PNG"],
+      type: "mri",
     },
     {
       title: "Upload Histopathological Images",
       acceptedFiles: ["JPG", "PNG"],
+      type: "histopathological",
     },
   ];
 
@@ -350,17 +370,17 @@ function UploadSection() {
               {card.title}
             </Typography>
             <UploadCard
-              key={card.title + index} // Use index or other unique identifier
+              key={card.title + index}
               title={card.title}
               acceptedFiles={card.acceptedFiles}
-              // onFileSelect={handleFileSelectForUploadCard}
+              customType={card.type} // add this prop
               setUploadedImages={setUploadedImages}
             />
           </Grid>
         ))}
       </Grid>
 
-      <Box sx={{ textAlign: "center", margin: 8 }}>
+      <Box sx={{ textAlign: "center", margin: 5 }}>
         <Button
           variant="contained"
           size="large"
@@ -376,7 +396,22 @@ function UploadSection() {
           onClick={() => {
             const lastImage = uploadedImages[uploadedImages.length - 1];
             if (lastImage) {
-              handleDiscoverDiagnosis(lastImage);
+              switch (lastImage.type) {
+                case "mammogram":
+                  handleUploadMammogram(lastImage);
+                  break;
+                case "ultrasound":
+                  handleUploadUltrasound(lastImage);
+                  break;
+                case "mri":
+                  handleUploadMRI(lastImage);
+                  break;
+                case "histopathological":
+                  handleUploadHistopathological(lastImage);
+                  break;
+                default:
+                  console.error("Unsupported file type.");
+              }
             }
           }}
           disabled={isUploading || uploadedImages.length === 0}
