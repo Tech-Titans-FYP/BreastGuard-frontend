@@ -15,7 +15,12 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { useNavigate } from "react-router-dom";
 
-function UploadCard({ acceptedFiles, setUploadedImages, customType }) {
+function UploadCard({
+  acceptedFiles,
+  setUploadedImages,
+  customType,
+  onUpload,
+}) {
   // State to manage file upload progress and status
   const [fileData, setFileData] = useState({
     name: "",
@@ -61,6 +66,7 @@ function UploadCard({ acceptedFiles, setUploadedImages, customType }) {
         } else {
           console.error("FileReader did not return a string.");
         }
+        onUpload(customType);
       };
 
       // This event is triggered each time the reading operation is aborted.
@@ -261,6 +267,7 @@ function UploadSection() {
   const navigate = useNavigate();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadedCardType, setUploadedCardType] = useState(null);
 
   const handleUploadMammogram = async (imageData) => {
     // if image type is mammogram then do, navigate to the /results page and print the result
@@ -356,28 +363,35 @@ function UploadSection() {
   return (
     <Container maxWidth="lg">
       <Grid container spacing={4} alignItems="center" justifyContent="center">
-        {uploadCards.map((card, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Typography
-              variant="subtitle2"
-              gutterBottom
-              sx={{
-                color: "#0C6872",
-                textAlign: "center",
-                fontWeight: "bold",
-              }}
-            >
-              {card.title}
-            </Typography>
-            <UploadCard
-              key={card.title + index}
-              title={card.title}
-              acceptedFiles={card.acceptedFiles}
-              customType={card.type} // add this prop
-              setUploadedImages={setUploadedImages}
-            />
-          </Grid>
-        ))}
+        {uploadCards.map((card, index) => {
+          // Render only if no card type has been uploaded or if the current card's type was uploaded
+          if (!uploadedCardType || card.type === uploadedCardType) {
+            return (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{
+                    color: "#0C6872",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {card.title}
+                </Typography>
+                <UploadCard
+                  key={card.title + index}
+                  title={card.title}
+                  acceptedFiles={card.acceptedFiles}
+                  customType={card.type}
+                  setUploadedImages={setUploadedImages}
+                  onUpload={setUploadedCardType} // Set the uploaded card type
+                />
+              </Grid>
+            );
+          }
+          return null; // Do not render the other cards
+        })}
       </Grid>
 
       <Box sx={{ textAlign: "center", margin: 5 }}>
