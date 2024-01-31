@@ -206,6 +206,7 @@ function UploadCard({ acceptedFiles, setUploadedImages, customType }) {
                     type="file"
                     onChange={handleFileSelectForUploadCard}
                     hidden
+                    accept=".png, .jpg, .jpeg"
                   />
                 </Typography>
                 <Stack
