@@ -12,6 +12,7 @@ import {
 import contactIllustration from "../assets/logo2.png";
 import styled from "styled-components";
 import backgroundImage from "../assets/background-watermark.png";
+import { colors } from "../consts/Colors";
 
 const ContactForm = () => {
   return (
@@ -26,7 +27,7 @@ const ContactForm = () => {
               fontWeight: "bold",
               textAlign: "center",
               mb: 4,
-              color: "#0C6872",
+              color: colors.darkNavy,
             }}
           >
             Contact with us
@@ -61,12 +62,12 @@ const ContactForm = () => {
                     variant="contained"
                     size="large"
                     sx={{
-                      backgroundColor: "#00A79D",
+                      backgroundColor: colors.darkNavy,
                       color: "#ffffff",
                       fontWeight: "bold",
                       borderRadius: "2rem",
                       "&:hover": {
-                        backgroundColor: "#00A79D",
+                        backgroundColor: colors.skyBlue,
                         color: "#ffffff",
                       },
                     }}

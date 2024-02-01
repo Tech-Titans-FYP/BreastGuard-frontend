@@ -14,6 +14,7 @@ import mammogramImage from "../../assets/mammogram.png"; // Replace with your ac
 import ultrasoundImage from "../../assets/ultrasound.png";
 import mriImage from "../../assets/mri.png";
 import histopathologicalImage from "../../assets/histopathology.png";
+import { colors } from "../../consts/Colors";
 
 const modalities = [
   {
@@ -54,12 +55,13 @@ const ModalitySection = () => {
   return (
     <Container maxWidth={false} disableGutters
     >
-      <Box sx={{ flexGrow: 1, bgcolor: "#00A79D", py: 3, my: 4}}>
+      <Box sx={{ flexGrow: 1, bgcolor: colors.skyBlue, py: 3, my: 4}}>
         <Typography
           variant="h4"
           gutterBottom
           textAlign="center"
           fontWeight="bold"
+          color="white"
         >
           We work with the four image modalities!
         </Typography>

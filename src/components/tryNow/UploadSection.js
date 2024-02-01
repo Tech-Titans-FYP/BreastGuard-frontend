@@ -14,6 +14,7 @@ import {
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import { useNavigate } from "react-router-dom";
+import { colors } from "../../consts/Colors";
 
 function UploadCard({
   acceptedFiles,
@@ -28,6 +29,7 @@ function UploadCard({
     progress: 0,
   });
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [imagePreview, setImagePreview] = useState(null); // State for storing image preview
 
   const uploadIntervalRef = useRef();
 
@@ -47,6 +49,7 @@ function UploadCard({
       // This event is triggered each time the reading operation is successfully completed.
       reader.onload = (e) => {
         console.log("File read successfully!");
+        setImagePreview(e.target.result); // Store the image data for preview
         const base64String = e.target.result;
         // Now we have the base64 string, let's update the state with this string
         if (typeof base64String === "string") {
@@ -117,149 +120,164 @@ function UploadCard({
   }, []); // Empty array ensures this only runs on mount and unmount
 
   return (
-    <Card
-      sx={{
-        backgroundColor:
-          fileData.status === "completed" ? "#0C6872" : "#61C8C4",
-        color: "#00A79D",
-        borderRadius: "1rem",
-        minHeight: "9rem",
-      }}
-    >
-      <CardContent
+    <>
+      {imagePreview && (
+        <Box
+          component="img"
+          src={imagePreview}
+          alt="Uploaded Image Preview"
+          sx={{
+            width: "100%",
+            height: "auto",
+            marginBottom: 2,
+            cursor: "pointer",
+          }}
+        />
+      )}
+      <Card
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "relative",
+          backgroundColor:
+            fileData.status === "completed" ? colors.darkNavy : colors.skyBlue,
+          color: "#00A79D",
+          borderRadius: "1rem",
+          minHeight: "9rem",
         }}
       >
-        {(fileData.status === "idle" || fileData.status === "uploading") && (
-          <>
-            {/* Upload progress UI */}
-            {fileData.status === "uploading" && (
-              <>
-                <LinearProgress
-                  variant="determinate"
-                  value={fileData.progress}
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    ".MuiLinearProgress-bar": { backgroundColor: "#0C6872" },
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "2.5rem",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    zIndex: 1,
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "white", textAlign: "center" }}
-                  >
-                    {fileData.name} - {uploadProgress}% Uploading
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "white", textAlign: "center" }}
-                  >
-                    {fileData.size} bytes
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "10px",
-                    right: "10px",
-                    background: "white",
-                    borderRadius: "0.6rem",
-                    padding: "0.1rem 0.3rem",
-                  }}
-                >
-                  <Typography
-                    onClick={handleCancelUpload}
-                    sx={{ color: "#0C6872", cursor: "pointer" }}
-                  >
-                    Cancel
-                  </Typography>
-                </Box>
-              </>
-            )}
-
-            {/* Click to upload UI */}
-            {fileData.status === "idle" && (
-              <>
-                <FileUploadOutlinedIcon sx={{ color: "white" }} />
-                <Typography
-                  component="label"
-                  sx={{
-                    color: "white",
-                    backgroundColor: "transparent",
-                    boxShadow: "none",
-                    cursor: "pointer",
-                    margin: "0.5rem",
-                  }}
-                >
-                  Click to upload
-                  <input
-                    type="file"
-                    onChange={handleFileSelectForUploadCard}
-                    hidden
-                    accept=".png, .jpg, .jpeg"
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          {(fileData.status === "idle" || fileData.status === "uploading") && (
+            <>
+              {/* Upload progress UI */}
+              {fileData.status === "uploading" && (
+                <>
+                  <LinearProgress
+                    variant="determinate"
+                    value={fileData.progress}
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      width: "100vw",
+                      height: "100vh",
+                      ".MuiLinearProgress-bar": { backgroundColor: "#0C6872" },
+                    }}
                   />
-                </Typography>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ flexWrap: "wrap", justifyContent: "center" }}
-                >
-                  {acceptedFiles.map((fileType, idx) => (
-                    <Chip
-                      key={idx}
-                      label={fileType}
-                      size="small"
-                      sx={{
-                        backgroundColor: "white",
-                        color: "#00A79D",
-                        margin: "4px",
-                      }}
-                    />
-                  ))}
-                </Stack>
-              </>
-            )}
-          </>
-        )}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "2.5rem",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      zIndex: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "white", textAlign: "center" }}
+                    >
+                      {fileData.name} - {uploadProgress}% Uploading
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "white", textAlign: "center" }}
+                    >
+                      {fileData.size} bytes
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "10px",
+                      right: "10px",
+                      background: "white",
+                      borderRadius: "0.6rem",
+                      padding: "0.1rem 0.3rem",
+                    }}
+                  >
+                    <Typography
+                      onClick={handleCancelUpload}
+                      sx={{ color: "#0C6872", cursor: "pointer" }}
+                    >
+                      Cancel
+                    </Typography>
+                  </Box>
+                </>
+              )}
 
-        {fileData.status === "completed" && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row", // Align items horizontally
-              alignItems: "center", // Align items vertically
-              justifyContent: "center",
-              margin: "2rem",
-              gap: "0.5rem",
-            }}
-          >
-            <VerifiedIcon sx={{ color: "#32E886", fontSize: "1.5rem" }} />
-            <Typography
-              variant="body2"
-              sx={{ color: "white", textAlign: "center" }}
+              {/* Click to upload UI */}
+              {fileData.status === "idle" && (
+                <>
+                  <FileUploadOutlinedIcon sx={{ color: "white" }} />
+                  <Typography
+                    component="label"
+                    sx={{
+                      color: "white",
+                      backgroundColor: "transparent",
+                      boxShadow: "none",
+                      cursor: "pointer",
+                      margin: "0.5rem",
+                    }}
+                  >
+                    Click to upload
+                    <input
+                      type="file"
+                      onChange={handleFileSelectForUploadCard}
+                      hidden
+                      accept=".png, .jpg, .jpeg"
+                    />
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ flexWrap: "wrap", justifyContent: "center" }}
+                  >
+                    {acceptedFiles.map((fileType, idx) => (
+                      <Chip
+                        key={idx}
+                        label={fileType}
+                        size="small"
+                        sx={{
+                          backgroundColor: "white",
+                          color: "#00A79D",
+                          margin: "4px",
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                </>
+              )}
+            </>
+          )}
+
+          {fileData.status === "completed" && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row", // Align items horizontally
+                alignItems: "center", // Align items vertically
+                justifyContent: "center",
+                margin: "2rem",
+                gap: "0.5rem",
+              }}
             >
-              {fileData.name} - Upload Complete
-            </Typography>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
+              <VerifiedIcon sx={{ color: "#32E886", fontSize: "1.5rem" }} />
+              <Typography
+                variant="body2"
+                sx={{ color: "white", textAlign: "center" }}
+              >
+                {fileData.name} - Upload Complete
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
@@ -362,7 +380,9 @@ function UploadSection() {
 
   return (
     <Container maxWidth="lg">
-      <Grid container spacing={4} alignItems="center" justifyContent="center">
+      <Grid container spacing={4} alignItems="center" justifyContent="center"
+      pt={6}
+      >
         {uploadCards.map((card, index) => {
           // Render only if no card type has been uploaded or if the current card's type was uploaded
           if (!uploadedCardType || card.type === uploadedCardType) {
@@ -372,7 +392,7 @@ function UploadSection() {
                   variant="subtitle2"
                   gutterBottom
                   sx={{
-                    color: "#0C6872",
+                    color: colors.darkNavy,
                     textAlign: "center",
                     fontWeight: "bold",
                   }}
@@ -399,12 +419,12 @@ function UploadSection() {
           variant="contained"
           size="large"
           sx={{
-            backgroundColor: "#00A79D",
+            backgroundColor: colors.darkNavy,
             color: "white",
             padding: "1rem",
             borderRadius: "1.5rem",
             "&:hover": {
-              backgroundColor: "#008c87",
+              backgroundColor: colors.skyBlue,
             },
           }}
           onClick={() => {
