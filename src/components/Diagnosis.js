@@ -90,27 +90,24 @@ function Diagnosis() {
     const elementsToHide = reportElement.querySelectorAll(".hide-on-pdf");
     elementsToHide.forEach((el) => (el.style.display = "none"));
 
-    const canvasOptions = {
-      scale: 2,
+    html2canvas(reportElement, {
+      scale: 2, // You can adjust the scale as needed
       useCORS: true,
       backgroundColor: null,
-      logging: true,
-    };
-
-    html2canvas(reportElement, canvasOptions)
+    })
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
-
+        const pdfWidth = 210; // A4 width in mm
+        const pdfHeight = 297; // A4 height in mm
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
         const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "px",
-          format: [canvas.width, canvas.height],
-          putOnlyUsedFonts: true,
+          orientation: "p",
+          unit: "mm",
+          format: "a4",
           compress: true,
         });
-
-        pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
-
+        // Add image to PDF
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, imgHeight);
         pdf.save("breast-cancer-analysis-report.pdf");
 
         // Restore hidden elements after capturing
@@ -147,21 +144,26 @@ function Diagnosis() {
               position: "absolute",
               top: "50%",
               left: "50%",
-              transform: "translate(-50%, -50%) rotate(-45deg)", // Add rotation here
-              opacity: 0.1, // Set the opacity of the watermark
-              zIndex: 9, // Ensure it's above the content but below the PDF download icon
+              transform: "translate(-50%, -50%) rotate(-45deg)",
+              opacity: 0.1,
+              zIndex: 9,
+              width: "60%", // Increase this percentage to make the watermark larger
+              height: "auto", // Setting height to auto maintains the aspect ratio of the image
+              maxWidth: "100%", // You can adjust or remove this if needed
+              maxHeight: "100%", // You can adjust or remove this if needed
             }}
           >
             <img
               src={watermark}
               alt="Watermark"
               style={{
-                // maxWidth: "100%", // You can set a specific size if you prefer
-                // maxHeight: "100%",
-                objectFit: "contain", // This will ensure the image is contained within its element and not stretched
+                width: "100%", // Ensure the image covers the full width of the Box container
+                height: "auto", // Maintain aspect ratio
+                objectFit: "contain", // Ensure the image is contained within its element
               }}
             />
           </Box>
+
           <Box sx={{ backgroundColor: colors.darkNavy, p: 3 }}>
             <FileDownloadOutlinedIcon
               onClick={downloadReport}
