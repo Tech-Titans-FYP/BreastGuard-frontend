@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  Paper,
-  Typography,
-  Container,
-  Grid,
-  Box,
-  Card,
-  CardMedia,
-  CardContent,
-  IconButton,
-  Modal,
-  Button,
-} from "@mui/material";
-import ZoomInIcon from "@mui/icons-material/ZoomIn";
-import footerLine from "../assets/footer line.png";
-import watermark from "../assets/logo.png";
+import { Paper, Typography, Container, Grid, Box } from "@mui/material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import { colors } from "../consts/Colors";
+import watermark from "../assets/watermark.png";
+import logo from "../assets/logo.png";
 
 function Diagnosis() {
   const location = useLocation();
-  const { result } = location.state || { result: {} };
+  const { result, formDetails } = location.state || {
+    result: {},
+    formDetails: {},
+  };
   const uploadedImages =
     JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
-  const [openModal, setOpenModal] = useState(false);
-  const [modalImage, setModalImage] = useState("");
+
   const [loading, setLoading] = useState(true); // Start with loading true
 
   useEffect(() => {
@@ -87,15 +77,6 @@ function Diagnosis() {
       100% { transform: scale(0); }
     }
   `;
-
-  const handleOpenModal = (image) => {
-    setModalImage(image);
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
 
   const diagnosisResult = {
     recommendation:
@@ -160,245 +141,184 @@ function Diagnosis() {
           <div className="wave"></div>
         </div>
       ) : (
-        <Paper elevation={3} sx={{ p: 2, m: 3 }} id="reportArea">
-          <FileDownloadOutlinedIcon
-            onClick={downloadReport}
-            sx={{
-              cursor: "pointer",
-              color: "#00A79D",
-              fontSize: "2rem",
-            }}
-            className="hide-on-pdf"
-          />
+        <Paper elevation={3} sx={{ mx: 10, my: 2 }} id="reportArea">
           <Box
-            component="img"
-            src={footerLine}
             sx={{
-              width: "100%",
-              height: "auto",
-              maxHeight: "100%",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%) rotate(-45deg)", // Add rotation here
+              opacity: 0.1, // Set the opacity of the watermark
+              zIndex: 9, // Ensure it's above the content but below the PDF download icon
             }}
-          />
-          <Box component="img" src={watermark} sx={watermarkStyle} />
-          <Typography
-            variant="h5"
-            gutterBottom
-            align="center"
-            sx={{ fontWeight: "bold", color: "#0C6872", marginY: "1.5rem" }}
           >
-            Breast Guard: Breast Cancer Analysis Report
-          </Typography>
+            <img
+              src={watermark}
+              alt="Watermark"
+              style={{
+                // maxWidth: "100%", // You can set a specific size if you prefer
+                // maxHeight: "100%",
+                objectFit: "contain", // This will ensure the image is contained within its element and not stretched
+              }}
+            />
+          </Box>
+          <Box sx={{ backgroundColor: colors.darkNavy, p: 3 }}>
+            <FileDownloadOutlinedIcon
+              onClick={downloadReport}
+              sx={{
+                cursor: "pointer",
+                color: "#00A79D",
+                fontSize: "2rem",
+              }}
+              className="hide-on-pdf"
+            />
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ fontWeight: "bold", color: "white", m: "1.5rem" }}
+            >
+              Breast Guard: PDF Report
+            </Typography>
+          </Box>
 
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Grid item xs={12} sm={6} lg={4}>
-              <Card
-                sx={{
-                  backgroundColor: "#00A79D",
-                  border: "1px solid #00A79D"
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={`data:image/png;base64,${uploadedImages[0].url}`}
-                  alt="Original Image"
-                  sx={{ width: "100%", height: "auto", maxHeight: "50vh" }}
-                />
-                <CardContent>
-                  <Typography
-                    gutterBottom
-                    variant="subtitle1"
-                    align="center"
-                    color="white"
-                  >
-                    Original Image
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+          <Box sx={{ mt: 3, pl: 6, color: colors.darkNavy }}>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Patient Details
+            </Typography>
+            {/* ... other content ... */}
+            <Typography sx={{ mb: 1 }}>
+              Full Name: {formDetails.fullName || "N/A"}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              Age: {formDetails.age || "N/A"}
+            </Typography>
+            <Typography sx={{ mb: 1 }}>
+              Gender: {formDetails.gender || "N/A"}
+            </Typography>
 
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            justifyContent="center"
-            sx={{ mt: 2 }}
-          >
-            <Grid item xs={12} sm={6} lg={4}>
-              <Card
-                sx={{
-                  backgroundColor: "#00A79D",
-                  border: "1px solid #00A79D"
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={`data:image/png;base64,${result.gradcam}`}
-                  alt="Localized Lesion"
-                  sx={{ width: "100%", height: "auto", maxHeight: "45vh" }}
-                />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      gutterBottom
-                      variant="subtitle1"
-                      align="center"
-                      color="white"
-                    >
-                      Localized Lesion
-                    </Typography>
-                    <IconButton
-                      onClick={() => handleOpenModal(result.gradcam)}
-                      className="hide-on-pdf"
-                    >
-                      <ZoomInIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} lg={4}>
-              <Card
-                sx={{
-                  backgroundColor: "#00A79D",
-                  border: "1px solid #00A79D"
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={`data:image/png;base64,${result.processed_original_image}`}
-                  alt="Original Lesion"
-                  sx={{ width: "100%", height: "auto", maxHeight: "50vh" }}
-                />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      gutterBottom
-                      variant="subtitle1"
-                      align="center"
-                      color="white"
-                    >
-                      Original Lesion
-                    </Typography>
-
-                    <IconButton
-                      onClick={() =>
-                        handleOpenModal(result.processed_original_image)
-                      }
-                      className="hide-on-pdf"
-                    >
-                      <ZoomInIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} lg={4}>
-              <Card
-                sx={{
-                  backgroundColor: "#00A79D",
-                  border: "1px solid #00A79D"
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={`data:image/png;base64,${result.processed_mask_image}`}
-                  alt="Original Lesion"
-                  sx={{ width: "100%", height: "auto", maxHeight: "50vh" }}
-                />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Typography
-                      gutterBottom
-                      variant="subtitle1"
-                      align="center"
-                      color="white"
-                    >
-                      Mask Lesion
-                    </Typography>
-
-                    <IconButton
-                      onClick={() =>
-                        handleOpenModal(result.processed_mask_image)
-                      }
-                      className="hide-on-pdf"
-                    >
-                      <ZoomInIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-
-          <Modal
-            open={openModal}
-            onClose={handleCloseModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Original Breast Image
+            </Typography>
+            <Box
+              sx={{
+                width: "50%",
+                maxHeight: "50vh",
+                overflow: "hidden",
+                marginBottom: "1rem",
+              }}
+            >
               <img
-                src={`data:image/png;base64,${modalImage}`}
-                alt="Enlarged Diagnostic"
-                style={{ width: "100%", maxHeight: "50vh", overflow: "auto" }} // Ensures image is not taller than viewport
-              />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end", // Positions the Close button at the end of the container
-                  p: 1, // Adds padding around the Close button for better visibility
+                src={`data:image/png;base64,${uploadedImages[0].url}`}
+                alt="Original Image"
+                style={{
+                  width: "50%",
+                  height: "auto",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
                 }}
-              >
-                <Button onClick={handleCloseModal} sx={{ zIndex: 10 }}>
-                  Close
-                </Button>
-              </Box>
+              />
             </Box>
-          </Modal>
-
-          <Box sx={{ backgroundColor: "#00A79D", mt: 3, p: 2, color: "white" }}>
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-              Classification:
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Diagnosis Results
             </Typography>
-            <Typography>{result.classification || "N/A"}</Typography>
 
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-              Diagnosis:
-            </Typography>
-            <Typography>{result.subtype || "N/A"}</Typography>
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item xs={7}>
+                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                  Classification:
+                </Typography>
+                <Typography>{result.classification || "N/A"}</Typography>
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Diagnosis:
+                </Typography>
+                <Typography>{result.subtype || "N/A"}</Typography>
 
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-              Description:
-            </Typography>
-            <Typography>{result.subtype_description || "N/A"}</Typography>
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Description:
+                </Typography>
+                <Typography>{result.subtype_description || "N/A"}</Typography>
 
-            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-              Recommendations:
-            </Typography>
-            <Typography>{diagnosisResult.recommendation}</Typography>
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Recommendations:
+                </Typography>
+                <Typography>{diagnosisResult.recommendation}</Typography>
+              </Grid>
+              <Grid item xs={5}>
+                <Box
+                  sx={{
+                    width: "70%", // This will now take up 100% of the Grid item
+                    maxHeight: "50vh",
+                    overflow: "hidden",
+                    margin: "0 auto",
+                  }}
+                >
+                  <img
+                    src={`data:image/png;base64,${result.gradcam}`}
+                    alt="Localized Lesion"
+                    style={{
+                      width: "auto", // Auto width for maintaining aspect ratio
+                      maxHeight: "100%", // Maximum height is 100% of the container
+                      maxWidth: "100%", // Maximum width is 100% of the container
+                    }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+
+            <Grid
+              container
+              alignItems="flex-start"
+              justifyContent="flex-start"
+              spacing={2}
+            >
+              {" "}
+              {/* spacing={2} adds a gap */}
+              {[
+                result.processed_original_image,
+                result.processed_mask_image,
+              ].map((imageSrc, index) => (
+                <Grid item xs={5} key={index}>
+                  {" "}
+                  {/* xs={6} ensures that the items take up half the width of the container */}
+                  <Box
+                    sx={{
+                      width: "100%", // Take up 100% of the Grid item
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                      display: "flex",
+                      justifyContent: "flex-start", // Align image horizontally to the start
+                      alignItems: "flex-start", // Align image vertically to the start
+                      border: "1px solid gray",
+                      marginY: "1rem",
+                    }}
+                  >
+                    <img
+                      src={`data:image/png;base64,${imageSrc}`}
+                      alt={`Localized Lesion ${index + 1}`}
+                      style={{
+                        width: "auto", // Auto width for maintaining aspect ratio
+                        maxHeight: "100%", // Maximum height is 100% of the container
+                        maxWidth: "100%", // Maximum width is 100% of the container
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+
+          <Box sx={{ backgroundColor: colors.darkNavy, p: 3 }}>
+            <Box
+              component="img"
+              src={logo}
+              sx={{
+                width: "20vw",
+                height: "auto",
+                maxHeight: "100%",
+                display: "block",
+                margin: "auto",
+              }}
+            />
           </Box>
         </Paper>
       )}
@@ -407,24 +327,3 @@ function Diagnosis() {
 }
 
 export default Diagnosis;
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "auto",
-  maxWidth: "90vw",
-  maxHeight: "90vh",
-  bgcolor: "background.paper",
-  boxShadow: 20,
-  p: 3,
-};
-
-const watermarkStyle = {
-  opacity: 0.5, // Adjust the watermark opacity
-  width: 300, // Adjust the watermark size
-  height: "auto",
-  margin: "auto",
-  display: "block",
-};

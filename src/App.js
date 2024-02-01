@@ -7,7 +7,7 @@ import Home from './pages/HomePage';
 import TryNow from './pages/TryNowPage';
 import DiagnosisPage from './pages/DiagnosisPage';
 import Layout from './components/Layout';
-import ContactForm from './pages/ContactPage';
+import ContactForm from './pages/ContactPage'; 
 
 function App() {
   return (
