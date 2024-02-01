@@ -8,8 +8,8 @@ import backgroundImage from "../assets/background-watermark.png";
 const TryNow = () => {
   return (
     <>
+      <ImagePoweredAnalysis />
       <StyledContainer>
-        <ImagePoweredAnalysis />
         <UploadSection />
       </StyledContainer>
     </>

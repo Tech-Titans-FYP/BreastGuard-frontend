@@ -16,12 +16,31 @@ import {
 import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/logo.png";
+import { useScrollTrigger } from "@mui/material";
+import { colors } from "../consts/Colors";
+
+function ElevationScroll(props) {
+  const { children, window } = props;
+  const trigger = useScrollTrigger({
+    target: window ? window() : undefined,
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0,
+    style: {
+      backgroundColor: trigger ? colors.darkNavy : "transparent",
+      transition: "background-color 0.3s ease-in-out",
+    },
+  });
+}
 
 // Create a theme instance.
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#eeeee4", // This color will be used as the background color of the AppBar
+      main: "rgba(0, 0, 0, 0)", // fully transparent
     },
   },
   typography: {
@@ -32,7 +51,7 @@ const theme = createTheme({
   },
 });
 
-const Header = () => {
+const Header = (props) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -49,113 +68,138 @@ const Header = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="sticky" color="primary">
-        <Toolbar>
-          {isMobile ? (
-            <>
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={toggleMobileMenu}
+      <ElevationScroll {...props}>
+        <AppBar position="sticky">
+          <Toolbar>
+            {isMobile ? (
+              <>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={toggleMobileMenu}
+                >
+                  <MenuIcon 
+                    color="white"
+                  />
+                </IconButton>
+                <Drawer
+                  anchor="left"
+                  open={mobileMenuOpen}
+                  onClose={toggleMobileMenu}
+                >
+                  <List
+                  
+                  >
+                    {[
+                      "Home",
+                      "Results",
+                      "Usability",
+                      "User Manual",
+                      "Contact Us",
+                      "Try Now",
+                    ].map((text) => (
+                      <ListItem
+                        button
+                        key={text}
+                        onClick={() =>
+                          "Home" === text
+                            ? handleNavigate(`/`)
+                            : handleNavigate(
+                                `/${text.toLowerCase().replace(/\s/g, "")}`
+                              )
+                        }
+                      >
+                        <ListItemText primary={text} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Drawer>
+              </>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
               >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                anchor="left"
-                open={mobileMenuOpen}
-                onClose={toggleMobileMenu}
-              >
-                <List>
-                  {[
-                    "Home",
-                    "Results",
-                    "Usability",
-                    "User Manual",
-                    "Contact Us",
-                    "Try Now",
-                  ].map((text) => (
-                    <ListItem
-                      button
-                      key={text}
-                      onClick={() =>
-                        "Home" === text
-                          ? handleNavigate(`/`)
-                          : handleNavigate(
-                              `/${text.toLowerCase().replace(/\s/g, "")}`
-                            )
-                      }
-                    >
-                      <ListItemText primary={text} />
-                    </ListItem>
-                  ))}
-                </List>
-              </Drawer>
-            </>
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <img
-                src={logo}
-                alt="Breast Guard Logo"
-                style={{ height: "3.125rem" }}
-                onClick={() => handleNavigate("/")}
-              />
-              <Box>
-                <Button color="inherit" onClick={() => handleNavigate("/")}>
-                  Home
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => handleNavigate("/results")}
-                >
-                  Results
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => handleNavigate("/usability")}
-                >
-                  Usability
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => handleNavigate("/manual")}
-                >
-                  User Manual
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => handleNavigate("/contactus")}
-                >
-                  Contact Us
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#00A79D",
-                    "&:hover": {
-                      backgroundColor: "darken(#00A79D, 0.2)",
-                    },
-                    borderRadius: "1.25rem", // 20px to rem
-                    color: "white",
-                    padding: "0.375rem 0.9375rem", // 6px 15px to rem
-                    textTransform: "none",
-                    boxShadow: "none", // Custom shadow effect removed for consistency
-                  }}
-                  onClick={() => handleNavigate("/trynow")}
-                >
-                  Try Now
-                </Button>
+                <img
+                  src={logo}
+                  alt="Breast Guard Logo"
+                  style={{ height: "3.125rem" }}
+                  onClick={() => handleNavigate("/")}
+                />
+                <Box>
+                  <Button
+                    color="inherit"
+                    onClick={() => handleNavigate("/")}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Home
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => handleNavigate("/results")}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Results
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => handleNavigate("/usability")}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Usability
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => handleNavigate("/manual")}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    User Manual
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => handleNavigate("/contactus")}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Contact Us
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: colors.teal,
+                      "&:hover": {
+                        backgroundColor: colors.skyBlue,
+                      },
+                      borderRadius: "1.25rem", // 20px to rem
+                      color: "white",
+                      padding: "0.375rem 0.9375rem", // 6px 15px to rem
+                      textTransform: "none",
+                      boxShadow: "none", // Custom shadow effect removed for consistency
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => handleNavigate("/trynow")}
+                  >
+                    Try Now
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          )}
-        </Toolbar>
-      </AppBar>
+            )}
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
     </ThemeProvider>
   );
 };

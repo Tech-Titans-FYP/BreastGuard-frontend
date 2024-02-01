@@ -6,7 +6,6 @@ import styled from "styled-components";
 import backgroundImage from "../assets/background-watermark.png";
 import { Container } from "@mui/material";
 import ModalitySection from "../components/home/ModalitySection";
-import ContactForm from "./ContactPage";
 
 const Home = () => {
   return (
@@ -17,7 +16,6 @@ const Home = () => {
         <WhatWeDo />
       </StyledContainer>
       <ModalitySection />
-      <ContactForm/>
     </>
   );
 };

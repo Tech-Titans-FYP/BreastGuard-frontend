@@ -4,14 +4,9 @@ import {
   Typography,
   Button,
   Paper,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Box,
 } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import homeImage from "../../assets/home.jpg"; // Make sure the path is correct
+import homeImage from "../../assets/home_background.jpg"; // Make sure the path is correct
 
 const styles = {
   paperContainer: {
@@ -19,41 +14,48 @@ const styles = {
     backgroundSize: "cover",
     backgroundPosition: "center center",
     color: "white",
-    height: "80vh",
+    height: "100vh",
     position: "relative",
     display: "flex",
-    justifyContent: "center", // Align content vertically in the center
+    justifyContent: "left", // Align content vertically in the center
     alignItems: "center", // Align content horizontally in the center
-    padding: "1.25rem",
-  },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    height: "100%",
-    width: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: "5rem",
+    marginTop: '-64px',
   },
   content: {
     position: "relative",
     zIndex: 2,
-    maxWidth: "600px",
+    maxWidth: "450px",
     display: "flex", // Enable flex container
     flexDirection: "column", // Stack children vertically
-    alignItems: "center", // Align children in the center horizontally
-    textAlign: "center", // Center text
+    alignItems: "left", // Align children in the center horizontally
+    textAlign: "left", // Center text
   },
-  button: {
+  button1: {
     marginTop: "1.25rem", // 20px converted to rem
-    backgroundColor: "#00A79D",
+    backgroundColor: "#ffffff",
     "&:hover": {
-      backgroundColor: "#00897b",
+      backgroundColor: "#2897A5",
+    },
+    borderRadius: "1.25rem", // 20px converted to rem
+    color: "#01313E",
+    textTransform: "none",
+    padding: "0.625rem 2rem", // 10px 20px converted to rem
+    boxShadow: "none",
+    fontWeight: "bold"
+  },
+  button2: {
+    marginTop: "1.25rem", // 20px converted to rem
+    backgroundColor: "#01313E",
+    "&:hover": {
+      backgroundColor: "#2897A5",
     },
     borderRadius: "1.25rem", // 20px converted to rem
     color: "white",
     textTransform: "none",
     padding: "0.625rem 2rem", // 10px 20px converted to rem
     boxShadow: "none",
+    fontWeight: "bold"
   },
   listItemIcon: {
     minWidth: "1.875rem", // 30px converted to rem
@@ -71,6 +73,10 @@ const HomeImage = () => {
     navigate("/trynow"); // This should be the route path you defined for the TryNow page
   };
 
+  const handleClickManual = () => {
+    navigate("/manual"); // This should be the route path you defined for the TryNow page
+  };
+
   return (
     <Paper style={styles.paperContainer}>
       <Box style={styles.overlay} />
@@ -83,30 +89,19 @@ const HomeImage = () => {
         >
           Our source for Multiple Solutions
         </Typography>
-        <List sx={{ padding: 0, width: "100%" }}>
-          {" "}
-          {/* Set width to 100% for proper centering */}
-          {[
-            "Features from diverse imaging modalities",
-            "Accurately locate and classify breast cancer",
-            "Breast Cancer Diagnosis Professionals",
-            "Data Interpretation and Management",
-          ].map((text, index) => (
-            <ListItem
-              key={index}
-              disableGutters
-              sx={{ justifyContent: "center", display: "flex" }}
-            >
-              <ListItemIcon sx={styles.listItemIcon}>
-                <CheckCircleOutlineIcon />
-              </ListItemIcon>
-              <ListItemText primary={text} sx={styles.listItemText} />
-            </ListItem>
-          ))}
-        </List>
-        <Button variant="contained" sx={styles.button} onClick={handleClick}>
-          Try Now
+        <Box
+        sx={{
+          display: "flex",
+          gap: "1rem",         
+        }}
+        >             
+        <Button variant="contained" sx={styles.button1} onClick={handleClick}>
+          START BREASTGUARD
         </Button>
+        <Button variant="contained" sx={styles.button2} onClick={handleClickManual}>
+          USER MANUAL
+        </Button>
+        </Box>
       </Box>
     </Paper>
   );
