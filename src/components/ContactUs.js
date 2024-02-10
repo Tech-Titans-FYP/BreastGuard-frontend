@@ -4,8 +4,6 @@ import {
   Grid,
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
   Box,
 } from "@mui/material";
 import contactIllustration from "../assets/logo2.png";
@@ -45,12 +43,6 @@ const ContactUs = () => {
                     fullWidth
                     multiline
                     rows={4}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={<Checkbox name="agree" color="primary" />}
-                    label="By Submitting you are agreed to the Terms & Conditions, and Privacy Policy"
                   />
                 </Grid>
                 <Grid item xs={12}>
