@@ -98,7 +98,7 @@ function Diagnosis() {
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
         const pdfWidth = 210; // A4 width in mm
-        const pdfHeight = 297; // A4 height in mm
+        // const pdfHeight = 297; // A4 height in mm
         const imgHeight = (canvas.height * pdfWidth) / canvas.width;
         const pdf = new jsPDF({
           orientation: "p",
@@ -164,7 +164,7 @@ function Diagnosis() {
             />
           </Box>
 
-          <Box sx={{ backgroundColor: colors.darkNavy, p: 3 }}>
+          <Box sx={{ backgroundColor: colors.darkNavy, p: 1 }}>
             <FileDownloadOutlinedIcon
               onClick={downloadReport}
               sx={{
@@ -177,9 +177,9 @@ function Diagnosis() {
             <Typography
               variant="h5"
               gutterBottom
-              sx={{ fontWeight: "bold", color: "white", m: "1.5rem" }}
+              sx={{ fontWeight: "bold", color: "white", m: "1.5rem", textAlign: "center" }}
             >
-              Breast Guard: PDF Report
+              Breast Guard: Brest Cancer Analysis PDF Report
             </Typography>
           </Box>
 
@@ -187,7 +187,6 @@ function Diagnosis() {
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
               Patient Details
             </Typography>
-            {/* ... other content ... */}
             <Typography sx={{ mb: 1 }}>
               Full Name: {formDetails.fullName || "N/A"}
             </Typography>
@@ -211,7 +210,7 @@ function Diagnosis() {
             >
               <img
                 src={`data:image/png;base64,${uploadedImages[0].url}`}
-                alt="Original Image"
+                alt="Original"
                 style={{
                   width: "50%",
                   height: "auto",
@@ -309,12 +308,12 @@ function Diagnosis() {
             </Grid>
           </Box>
 
-          <Box sx={{ backgroundColor: colors.darkNavy, p: 3 }}>
+          <Box sx={{ backgroundColor: colors.darkNavy, p: 1 }}>
             <Box
               component="img"
               src={logo}
               sx={{
-                width: "20vw",
+                width: "15vw",
                 height: "auto",
                 maxHeight: "100%",
                 display: "block",
