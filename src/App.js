@@ -9,7 +9,7 @@ import DiagnosisPage from './pages/DiagnosisPage';
 import Layout from './components/Layout';
 import ContactForm from './pages/ContactPage'; 
 import Results from './pages/ResultsPage';
-import UserManual from './pages/UserManualPage';
+import UserManualPage from './pages/UserManualPage';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/results" element={<Layout><Results /></Layout>}/>
-          <Route path="/manual" element={<Layout><UserManual /></Layout>}/>
+          <Route path="/manual" element={<Layout><UserManualPage /></Layout>}/>
           <Route path="/trynow" element={<Layout><TryNow /></Layout>} />
           <Route path="/contactus" element={<Layout><ContactForm /></Layout>}/>
           <Route path="/diagnosis" element={<Layout><DiagnosisPage /></Layout>} />          
