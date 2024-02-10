@@ -1,6 +1,6 @@
 import React from "react";
 import { Container } from "@mui/material";
-import ImagePoweredAnalysis from "../components/tryNow/ImagePoweredAnalysis";
+import ImagePoweredAnalysis from "../components/ImagePoweredAnalysis";
 import UploadSection from "../components/tryNow/UploadSection";
 import styled from "styled-components";
 import backgroundImage from "../assets/background-watermark.png";
@@ -8,7 +8,12 @@ import backgroundImage from "../assets/background-watermark.png";
 const TryNow = () => {
   return (
     <>
-      <ImagePoweredAnalysis />
+      <ImagePoweredAnalysis
+        title="Breast Guard: Image-Powered Breast Cancer Analysis"
+        description="Seamlessly upload your breast images to our cutting-edge platform, enabling precise 
+          classification, localization, and subtype identification for personalized insights into 
+          your breast cancer condition."
+      />
       <StyledContainer>
         <UploadSection />
       </StyledContainer>
