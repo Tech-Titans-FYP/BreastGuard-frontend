@@ -10,6 +10,7 @@ import Layout from './components/Layout';
 import ContactForm from './pages/ContactPage'; 
 import Results from './pages/ResultsPage';
 import UserManualPage from './pages/UserManualPage';
+import Usability from './pages/UsabilityPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/results" element={<Layout><Results /></Layout>}/>
+          <Route path="/usability" element={<Layout><Usability /></Layout>}/>
           <Route path="/manual" element={<Layout><UserManualPage /></Layout>}/>
           <Route path="/trynow" element={<Layout><TryNow /></Layout>} />
           <Route path="/contactus" element={<Layout><ContactForm /></Layout>}/>
