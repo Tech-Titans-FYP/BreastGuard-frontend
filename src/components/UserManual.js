@@ -62,7 +62,7 @@ const UserManual = () => {
     <Container>
       {/* Step 1 */}
       {steps.map((step, index) => (
-        <Box key={index} elevation={3} sx={{ my: 3 }}>
+        <Box key={index} sx={{ my: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={6}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
