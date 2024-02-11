@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { Typography, Card, CardContent, Grid, Box } from "@mui/material";
-import Card1 from "../../assets/serve-card1.png";
-import Card2 from "../../assets/serve-card2.png";
-import Card3 from "../../assets/serve-card3.png";
+import Card1 from "../../assets/home/serve-card1.png";
+import Card2 from "../../assets/home/serve-card2.png";
+import Card3 from "../../assets/home/serve-card3.png";
 import { colors } from "../../consts/Colors";
 import { styled, keyframes } from "@mui/material/styles";
 

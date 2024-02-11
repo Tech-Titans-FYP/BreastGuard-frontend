@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 
 // Images can be imported if they are stored locally in your src/assets directory
-import mammogramImage from "../../assets/mammogram.png"; // Replace with your actual import paths
-import ultrasoundImage from "../../assets/ultrasound.png";
-import mriImage from "../../assets/mri.png";
-import histopathologicalImage from "../../assets/histopathology.png";
+import mammogramImage from "../../assets/home/mammogram.png"; // Replace with your actual import paths
+import ultrasoundImage from "../../assets/home/ultrasound.png";
+import mriImage from "../../assets/home/mri.png";
+import histopathologicalImage from "../../assets/home/histopathology.png";
 import { colors } from "../../consts/Colors";
 
 const modalities = [

@@ -6,7 +6,7 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import homeImage from "../../assets/home_background.jpg"; // Make sure the path is correct
+import homeImage from "../../assets/home/home_background.jpg"; // Make sure the path is correct
 
 const styles = {
   paperContainer: {

@@ -1,11 +1,14 @@
 import React from "react";
 import { Typography, Container, Box, Grid } from "@mui/material";
 import { colors } from "../consts/Colors";
-import step1Image from "../assets/step1.gif"; // Make sure to import actual image
-import step2Image from "../assets/step2.gif"; 
-import step3Image from "../assets/step3.gif"; 
-import step4Image from "../assets/step4.gif"; 
-import step1Icon from "../assets/step1.png";
+import step1Image from "../assets/user-manual/step1.gif"; // Make sure to import actual image
+import step2Image from "../assets/user-manual/step2.gif"; 
+import step3Image from "../assets/user-manual/step3.gif"; 
+import step4Image from "../assets/user-manual/step4.gif"; 
+import step1Icon from "../assets/user-manual/step1.png";
+import step2Icon from "../assets/user-manual/step2.png";
+import step3Icon from "../assets/user-manual/step3.png";
+import step4Icon from "../assets/user-manual/step4.png";
 
 const steps = [
   {
@@ -20,7 +23,7 @@ const steps = [
     alt: "Step 1",
   },
   {
-    icon: step1Icon,
+    icon: step2Icon,
     title: "Edit Image to Fit",
     descriptions: [
       "After uploading the image, it needs to be manipulated to fit. The following tools are available to manipulate the image.",
@@ -32,7 +35,7 @@ const steps = [
     alt: "Step 2",
   },
   {
-    icon: step1Icon,
+    icon: step3Icon,
     title: "Fill patient's details",
     descriptions: [
       "Fill the patien's details of Full name, Age, Gender correctly",
@@ -43,7 +46,7 @@ const steps = [
     alt: "Step 3",
   },
   {
-    icon: step1Icon,
+    icon: step4Icon,
     title: "View the Generated Report",
     descriptions: [
       "Carefully view the generated report based on your uploaded breast image.",
@@ -59,10 +62,10 @@ const UserManual = () => {
     <Container>
       {/* Step 1 */}
       {steps.map((step, index) => (
-        <Box key={index} elevation={3} sx={{ my: 3 }}>
+        <Box key={index} sx={{ my: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={6}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Box
                   component="img"
                   src={step.icon}
@@ -77,7 +80,7 @@ const UserManual = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {`Step ${index + 1}: ${step.title}`}
+                  {step.title}
                 </Typography>
               </Box>
               {step.descriptions.map((desc, idx) => (
