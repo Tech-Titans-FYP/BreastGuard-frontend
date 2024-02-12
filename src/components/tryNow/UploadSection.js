@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Typography, Box, Grid, Container } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Grid,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { colors } from "../../consts/Colors";
 import UploadCard from "./UploadCard";
@@ -18,6 +29,8 @@ function UploadSection() {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openCustomDialog, setOpenCustomDialog] = useState(false);
+  const [customDialogMessage, setCustomDialogMessage] = useState("");
 
   const handleConfirmAdjustments = () => {
     applyAdjustmentsAndSetImage(); // This will apply the adjustments and open the form
@@ -79,22 +92,31 @@ function UploadSection() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error: ${response.status}`);
+      // }
 
       const result = await response.json();
       console.log(result);
 
-      // Save the base64 image data to sessionStorage
-      sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
-
-      navigate("/diagnosis", {
-        state: {
-          result: result,
-          formDetails: { fullName, age, gender }, // Assuming these state variables hold your form data
-        },
-      });
+      if (!response.ok) {
+        setIsUploading(false);
+        if (result.message) {
+          // Set the message and show the dialog
+          setCustomDialogMessage(result.message);
+          setOpenCustomDialog(true);
+        }
+      } else {
+        // Save the base64 image data to sessionStorage
+        sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
+        // Navigate to the diagnosis page with the server's result
+        navigate("/diagnosis", {
+          state: {
+            result: result,
+            formDetails: { fullName, age, gender },
+          },
+        });
+      }
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
     } finally {
@@ -294,6 +316,9 @@ function UploadSection() {
                 const lastImage = uploadedImages[uploadedImages.length - 1];
                 handleUpload(lastImage.type);
               }}
+              openCustomDialog={openCustomDialog}
+              setOpenCustomDialog={setOpenCustomDialog}
+              customDialogMessage={customDialogMessage}
             />
           )}
         </>
@@ -337,6 +362,24 @@ function UploadSection() {
           })}
         </Grid>
       )}
+      <Dialog
+        open={openCustomDialog}
+        onClose={() => setOpenCustomDialog(false)}
+        aria-labelledby="custom-dialog-title"
+        aria-describedby="custom-dialog-description"
+      >
+        <DialogTitle id="custom-dialog-title">
+          {"Image Classification Error"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="custom-dialog-description">
+            {customDialogMessage}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCustomDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
