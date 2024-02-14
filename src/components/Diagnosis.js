@@ -177,24 +177,29 @@ function Diagnosis() {
             <Typography
               variant="h5"
               gutterBottom
-              sx={{ fontWeight: "bold", color: "white", m: "1.5rem", textAlign: "center" }}
+              sx={{
+                fontWeight: "bold",
+                color: "white",
+                m: "1.5rem",
+                textAlign: "center",
+              }}
             >
               Breast Guard: Brest Cancer Analysis PDF Report
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, pl: 6, color: colors.darkNavy }}>
+          <Box sx={{ mt: 3, pl: 6, pb: 6, color: colors.darkNavy }}>
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
               Patient Details
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Full Name: {formDetails.fullName || "N/A"}
+              Full Name: {formDetails?.fullName || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Age: {formDetails.age || "N/A"}
+              Age: {formDetails?.age || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Gender: {formDetails.gender || "N/A"}
+              Gender: {formDetails?.gender || "N/A"}
             </Typography>
 
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
@@ -234,11 +239,14 @@ function Diagnosis() {
                 </Typography>
                 <Typography>{result.subtype || "N/A"}</Typography>
 
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Description:
-                </Typography>
-                <Typography>{result.subtype_description || "N/A"}</Typography>
-
+                {result.subtype_description && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Description:
+                    </Typography>
+                    <Typography>{result.subtype_description}</Typography>
+                  </>
+                )}
                 <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Recommendations:
                 </Typography>
@@ -272,39 +280,38 @@ function Diagnosis() {
               justifyContent="flex-start"
               spacing={2}
             >
-              {" "}
-              {/* spacing={2} adds a gap */}
               {[
                 result.processed_original_image,
                 result.processed_mask_image,
-              ].map((imageSrc, index) => (
-                <Grid item xs={5} key={index}>
-                  {" "}
-                  {/* xs={6} ensures that the items take up half the width of the container */}
-                  <Box
-                    sx={{
-                      width: "100%", // Take up 100% of the Grid item
-                      maxHeight: "50vh",
-                      overflow: "hidden",
-                      display: "flex",
-                      justifyContent: "flex-start", // Align image horizontally to the start
-                      alignItems: "flex-start", // Align image vertically to the start
-                      border: "1px solid gray",
-                      marginY: "1rem",
-                    }}
-                  >
-                    <img
-                      src={`data:image/png;base64,${imageSrc}`}
-                      alt={`Localized Lesion ${index + 1}`}
-                      style={{
-                        width: "auto", // Auto width for maintaining aspect ratio
-                        maxHeight: "100%", // Maximum height is 100% of the container
-                        maxWidth: "100%", // Maximum width is 100% of the container
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              ))}
+              ].map(
+                (imageSrc, index) =>
+                  imageSrc && (
+                    <Grid item xs={5} key={index}>
+                      <Box
+                        sx={{
+                          width: "100%", // Take up 100% of the Grid item
+                          maxHeight: "50vh",
+                          overflow: "hidden",
+                          display: "flex",
+                          justifyContent: "flex-start", // Align image horizontally to the start
+                          alignItems: "flex-start", // Align image vertically to the start
+                          border: "1px solid gray",
+                          marginY: "1rem",
+                        }}
+                      >
+                        <img
+                          src={`data:image/png;base64,${imageSrc}`}
+                          alt={`Localized Lesion ${index + 1}`}
+                          style={{
+                            width: "auto", // Auto width for maintaining aspect ratio
+                            maxHeight: "100%", // Maximum height is 100% of the container
+                            maxWidth: "100%", // Maximum width is 100% of the container
+                          }}
+                        />
+                      </Box>
+                    </Grid>
+                  )
+              )}
             </Grid>
           </Box>
 
