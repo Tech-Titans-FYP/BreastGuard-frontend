@@ -1,19 +1,36 @@
 import React from "react";
 import { Typography, Box, Grid } from "@mui/material";
 import { colors } from "../consts/Colors";
-import usClassificiaton from "../assets/results/us-classification-results.JPG";
-import usSubtype from "../assets/results/us-subtype-results.JPG";
+import results1 from "../assets/results/results1.jpg";
+import results2 from "../assets/results/results2.jpg";
+import results3 from "../assets/results/results3.jpg";
+import classificationResults from "../assets/results/42.png";
+import subtypeResults from "../assets/results/43.png";
 
 const results = [
     {
         title: "Survey Results",
         content: [
           {
-            subtitle: "Ultrasound Image Modality",
+            subtitle: "Positive responses from the 20 participants ",
             descriptions:
-              "Explore our latest classification results for ultrasound image analysis. Our advanced deep learning models, including ResNet50, EfficientNet, DenseNet201, and InceptionV3, have been rigorously tested to ensure high accuracy and low loss in image classification tasks. The ResNet50 is in our tailored method showcases an impressive accuracy of 95.78% with a minimal loss of 1.88%, leading to more reliable and precise diagnostic capabilities.",
-            image: usClassificiaton,
-            alt: "us Classificiaton",
+              "This figure illustrates the percentage of positive responses from the 20 participants. Overall, 95% of the participants found the system easy to use, 85% felt that the system was well integrated, 80% expressed confidence when using the system, 75% believed that the system could be learned quickly, and 90% reported a liking for using the system frequently.",
+            image: results1,
+            alt: "results 1",
+          },
+          {
+            subtitle: "Negative responses obtained from the survey results",
+            descriptions:
+              "We present the negative responses obtained from the survey results. Based on the feedback received from participants, it was found that 20% of users perceived the system as difficult to use due to its complexity. Another 10% of users reported difficulty in using the system due to its inconsistency, while 5% expressed challenges related to the need for prior learning. To improve the system's usability, we recommend implementing training sessions that can help users gain a better understanding of the system's functionalities. By providing training and guidance, users can become more proficient in utilizing the system effectively and overcome the difficulties they encounter.",
+            image: results2,
+            alt: "results 2",
+          },
+          {
+            subtitle: "Statistical analysis of the 20 participants",
+            descriptions:
+              "To assess the accuracy of our medical image classification framework, we conducted a survey involving two radiologists, three doctors, and five medical interns. The participants were shown eight breast images, along with their corresponding generated reports. They were then asked to rate the accuracy of each generated report on a scale of 1 to 10. The results of the survey were promising, with all participants rating the accuracy of the generated reports as greater than 7.5 out of 10. These high ratings demonstrate the effectiveness of our framework in accurately generating medical reports based on breast images. Furthermore, we conducted a statistical analysis of the survey results, which is presented in Chart 3. Overall, the survey results provide strong evidence of the accuracy and effectiveness of our medical image classification framework. These findings suggest that our framework has the potential to improve the efficiency and accuracy of medical reporting, which can ultimately lead to improved patient care.",
+            image: results3,
+            alt: "results 3",
           },
         ],
       },
@@ -21,18 +38,11 @@ const results = [
     title: "Classification Results",
     content: [
       {
-        subtitle: "Ultrasound Image Modality",
+        subtitle: "Multi Image Modalities",
         descriptions:
-          "Explore our latest classification results for ultrasound image analysis. Our advanced deep learning models, including ResNet50, EfficientNet, DenseNet201, and InceptionV3, have been rigorously tested to ensure high accuracy and low loss in image classification tasks. The ResNet50 is in our tailored method showcases an impressive accuracy of 95.78% with a minimal loss of 1.88%, leading to more reliable and precise diagnostic capabilities.",
-        image: usClassificiaton,
-        alt: "us Classificiaton",
-      },
-      {
-        subtitle: "Ultrasound Image Modality",
-        descriptions:
-          "Explore our latest classification results for ultrasound image analysis. Our advanced deep learning models, including ResNet50, EfficientNet, DenseNet201, and InceptionV3, have been rigorously tested to ensure high accuracy and low loss in image classification tasks. The ResNet50 is in our tailored method showcases an impressive accuracy of 95.78% with a minimal loss of 1.88%, leading to more reliable and precise diagnostic capabilities.",
-        image: usClassificiaton,
-        alt: "us Classificiaton",
+          "Discover our latest achievements in breast cancer detection using diverse imaging techniques. Our state-of-the-art deep learning models, including ResNet50 and DenseNet201, have been meticulously trained on extensive datasets to ensure outstanding performance. Each model is specialized for different modalities such as Mammograms, Ultrasound, MRI, and Histopathology, achieving remarkable accuracy and low loss rates.",
+        image: classificationResults,
+        alt: "Classificiaton",
       },
     ],
   },
@@ -40,18 +50,11 @@ const results = [
     title: "Subtype Identification Results",
     content: [
       {
-        subtitle: "Ultrasound Image Modality",
+        subtitle: "Multi Image Modalities",
         descriptions:
-          "Our state-of-the-art ResNet50 model achieves outstanding accuracy in the identification of ultrasound image subtypes. It successfully discriminates among 13 different subclasses with 98.16% accuracy. Furthermore, our specialized models excel in the crucial task of separating malignant and benign conditions, with accuracies of 99.65% and 99.89% respectively, ensuring precise and dependable diagnostic support.",
-        image: usSubtype,
-        alt: "us Subtype",
-      },
-      {
-        subtitle: "Ultrasound Image Modality",
-        descriptions:
-          "Our state-of-the-art ResNet50 model achieves outstanding accuracy in the identification of ultrasound image subtypes. It successfully discriminates among 13 different subclasses with 98.16% accuracy. Furthermore, our specialized models excel in the crucial task of separating malignant and benign conditions, with accuracies of 99.65% and 99.89% respectively, ensuring precise and dependable diagnostic support.",
-        image: usSubtype,
-        alt: "us Subtype",
+          "Dive into our sophisticated results for breast cancer subtype identification across various imaging modalities. Our cutting-edge models demonstrate exceptional accuracy in differentiating among specific cancer subtypes, which is pivotal for tailored treatment strategies.",
+        image: subtypeResults,
+        alt: "Subtype",
       },
     ],
   },

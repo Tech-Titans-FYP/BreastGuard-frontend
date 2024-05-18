@@ -2,8 +2,9 @@ import React from "react";
 import { Container } from "@mui/material";
 import styled from "styled-components";
 import backgroundImage from "../assets/background-watermark.png";
-import ContactUs from "../components/ContactUs";
+import ContactUs from "../components/contactUs/ContactUs";
 import ImagePoweredAnalysis from "../components/ImagePoweredAnalysis";
+import Team from "../components/contactUs/TeamMemberCard";
 
 const ContactForm = () => {
   return (
@@ -17,6 +18,7 @@ const ContactForm = () => {
       <StyledContainer>
         <ContactUs />
       </StyledContainer>
+      <Team/>
     </>
   );
 };
