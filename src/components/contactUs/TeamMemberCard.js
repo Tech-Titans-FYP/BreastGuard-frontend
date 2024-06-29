@@ -4,12 +4,13 @@ import { colors } from "../../consts/Colors";
 import team from "../../assets/team/malshi.jpg";
 import lochandaka from "../../assets/team/lochandaka.jpg";
 import sumudu from "../../assets/team/sumudu.jpg";
+import mifras from "../../assets/team/mifras.jpg";
 
 const teamMembers = [
   {
-    name: "Mifras",
+    name: "Mifras Gaffoor",
     email: "mifrasagm.19@uom.lk",
-    image: team,
+    image: mifras,
   },
   {
     name: "Malshi Kulasinghe",
