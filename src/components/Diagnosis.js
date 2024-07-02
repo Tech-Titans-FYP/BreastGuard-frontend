@@ -17,18 +17,15 @@ function Diagnosis() {
   const uploadedImages =
     JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
 
-  const [loading, setLoading] = useState(true); // Start with loading true
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate a loading process here
     const timer = setTimeout(() => {
-      setLoading(false); // Turn off loading state after a delay
+      setLoading(false);
     }, 2000);
-
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer);
   }, []);
 
-  // Include your logo and apply animation styles
   const loadingAnimationStyle = `
     .center {
       height: 100vh;
@@ -85,20 +82,17 @@ function Diagnosis() {
 
   const downloadReport = () => {
     const reportElement = document.getElementById("reportArea");
-
-    // Temporarily hide elements that should not be in the PDF
     const elementsToHide = reportElement.querySelectorAll(".hide-on-pdf");
     elementsToHide.forEach((el) => (el.style.display = "none"));
 
     html2canvas(reportElement, {
-      scale: 2, // You can adjust the scale as needed
+      scale: 2,
       useCORS: true,
       backgroundColor: null,
     })
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
-        const pdfWidth = 210; // A4 width in mm
-        // const pdfHeight = 297; // A4 height in mm
+        const pdfWidth = 210;
         const imgHeight = (canvas.height * pdfWidth) / canvas.width;
         const pdf = new jsPDF({
           orientation: "p",
@@ -106,16 +100,12 @@ function Diagnosis() {
           format: "a4",
           compress: true,
         });
-        // Add image to PDF
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, imgHeight);
         pdf.save("breast-cancer-analysis-report.pdf");
-
-        // Restore hidden elements after capturing
         elementsToHide.forEach((el) => (el.style.display = ""));
       })
       .catch((err) => {
         console.error("Could not generate the report pdf", err);
-        // Restore hidden elements if there's an error
         elementsToHide.forEach((el) => (el.style.display = ""));
       });
   };
@@ -124,7 +114,6 @@ function Diagnosis() {
     <Container>
       <style>{loadingAnimationStyle}</style>
       {loading ? (
-        // Display the loading animation if in loading state
         <div className="center">
           <div className="wave"></div>
           <div className="wave"></div>
@@ -147,19 +136,19 @@ function Diagnosis() {
               transform: "translate(-50%, -50%) rotate(-45deg)",
               opacity: 0.1,
               zIndex: 9,
-              width: "60%", // Increase this percentage to make the watermark larger
-              height: "auto", // Setting height to auto maintains the aspect ratio of the image
-              maxWidth: "100%", // You can adjust or remove this if needed
-              maxHeight: "100%", // You can adjust or remove this if needed
+              width: "60%",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: "100%",
             }}
           >
             <img
               src={watermark}
               alt="Watermark"
               style={{
-                width: "100%", // Ensure the image covers the full width of the Box container
-                height: "auto", // Maintain aspect ratio
-                objectFit: "contain", // Ensure the image is contained within its element
+                width: "100%",
+                height: "auto",
+                objectFit: "contain",
               }}
             />
           </Box>
@@ -177,9 +166,14 @@ function Diagnosis() {
             <Typography
               variant="h5"
               gutterBottom
-              sx={{ fontWeight: "bold", color: "white", m: "1.5rem", textAlign: "center" }}
+              sx={{
+                fontWeight: "bold",
+                color: "white",
+                m: "1.5rem",
+                textAlign: "center",
+              }}
             >
-              Breast Guard: Brest Cancer Analysis PDF Report
+              Breast Guard: Breast Cancer Analysis PDF Report
             </Typography>
           </Box>
 
@@ -237,7 +231,47 @@ function Diagnosis() {
                 <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Description:
                 </Typography>
-                <Typography>{result.subtype_description || "N/A"}</Typography>
+                <Typography>
+                  {result.subtype_description?.description || "N/A"}
+                </Typography>
+
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Features:
+                </Typography>
+                <ul>
+                  {result.subtype_description?.features ? (
+                    result.subtype_description.features.map(
+                      (feature, index) => (
+                        <li key={index}>
+                          <Typography>{feature}</Typography>
+                        </li>
+                      )
+                    )
+                  ) : (
+                    <li>
+                      <Typography>N/A</Typography>
+                    </li>
+                  )}
+                </ul>
+
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Guidance:
+                </Typography>
+                <ul>
+                  {result.subtype_description?.guidance ? (
+                    result.subtype_description.guidance.map(
+                      (guidance, index) => (
+                        <li key={index}>
+                          <Typography>{guidance}</Typography>
+                        </li>
+                      )
+                    )
+                  ) : (
+                    <li>
+                      <Typography>N/A</Typography>
+                    </li>
+                  )}
+                </ul>
 
                 <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Recommendations:
@@ -247,19 +281,23 @@ function Diagnosis() {
               <Grid item xs={5}>
                 <Box
                   sx={{
-                    width: "70%", // This will now take up 100% of the Grid item
+                    width: "70%",
                     maxHeight: "50vh",
                     overflow: "hidden",
                     margin: "0 auto",
                   }}
                 >
                   <img
-                    src={`data:image/png;base64,${result.gradcam}`}
+                    src={`data:image/png;base64,${result.gradcam || ""}`}
                     alt="Localized Lesion"
                     style={{
-                      width: "auto", // Auto width for maintaining aspect ratio
-                      maxHeight: "100%", // Maximum height is 100% of the container
-                      maxWidth: "100%", // Maximum width is 100% of the container
+                      width: "auto",
+                      maxHeight: "100%",
+                      maxWidth: "100%",
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/png;base64,N/A";
                     }}
                   />
                 </Box>
@@ -272,34 +310,34 @@ function Diagnosis() {
               justifyContent="flex-start"
               spacing={2}
             >
-              {" "}
-              {/* spacing={2} adds a gap */}
               {[
                 result.processed_original_image,
                 result.processed_mask_image,
               ].map((imageSrc, index) => (
                 <Grid item xs={5} key={index}>
-                  {" "}
-                  {/* xs={6} ensures that the items take up half the width of the container */}
                   <Box
                     sx={{
-                      width: "100%", // Take up 100% of the Grid item
+                      width: "100%",
                       maxHeight: "50vh",
                       overflow: "hidden",
                       display: "flex",
-                      justifyContent: "flex-start", // Align image horizontally to the start
-                      alignItems: "flex-start", // Align image vertically to the start
+                      justifyContent: "flex-start",
+                      alignItems: "flex-start",
                       border: "1px solid gray",
                       marginY: "1rem",
                     }}
                   >
                     <img
-                      src={`data:image/png;base64,${imageSrc}`}
+                      src={`data:image/png;base64,${imageSrc || ""}`}
                       alt={`Localized Lesion ${index + 1}`}
                       style={{
-                        width: "auto", // Auto width for maintaining aspect ratio
-                        maxHeight: "100%", // Maximum height is 100% of the container
-                        maxWidth: "100%", // Maximum width is 100% of the container
+                        width: "auto",
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                      }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "data:image/png;base64,N/A";
                       }}
                     />
                   </Box>

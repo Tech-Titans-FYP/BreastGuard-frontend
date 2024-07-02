@@ -1,3 +1,5 @@
+//UploadSelection code
+
 import React, { useState } from "react";
 import { Typography, Box, Grid, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -158,7 +160,61 @@ function UploadSection() {
   };
 
   const handleUploadHistopathological = async (imageData) => {
-    // ........
+    setIsUploading(true);
+
+    // Use the imageData directly if it's already the base64 string, otherwise extract it
+    const base64Url = imageData.url.startsWith("data:")
+      ? imageData.url.split(",")[1]
+      : imageData.url;
+
+    console.log("Base64 URL:", base64Url);
+
+    const payload = {
+      image: [
+        {
+          url: base64Url,
+          type: imageData.type,
+          size: imageData.size,
+        },
+      ],
+    };
+
+    // Log the payload to confirm it's correct before sending
+    console.log("Payload to send:", payload); // This will format the log for better readability
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/process-histo-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log(result);
+
+      // Save the base64 image data to sessionStorage
+      sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
+
+      navigate("/diagnosis", {
+        state: {
+          result: result,
+          formDetails: { fullName, age, gender }, // Assuming these state variables hold your form data
+        },
+      });
+    } catch (error) {
+      console.error("There was a problem with the file upload:", error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleUpload = async () => {
