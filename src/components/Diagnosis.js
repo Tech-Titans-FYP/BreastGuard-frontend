@@ -223,21 +223,23 @@ function Diagnosis() {
 
             <Grid container alignItems="center" justifyContent="center">
               <Grid item xs={7}>
-                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                  Classification:
-                </Typography>
-                <Typography>{result.classification || "N/A"}</Typography>
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Diagnosis:
-                </Typography>
-                <Typography>{result.subtype || "N/A"}</Typography>
+                {result.classification && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Classification:
+                    </Typography>
+                    <Typography>{result.classification}</Typography>
+                  </>
+                )}
 
-                {/* <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Description:
-                </Typography>
-                <Typography>
-                  {result.subtype_description?.description || "N/A"}
-                </Typography> */}
+                {result.classification && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Diagnosis:
+                    </Typography>
+                    <Typography>{result.subtype}</Typography>
+                  </>
+                )}
 
                 {result.subtype_description && (
                   <>
@@ -248,73 +250,63 @@ function Diagnosis() {
                   </>
                 )}
 
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Features:
-                </Typography>
-                <ul>
-                  {result.features ? (
-                    result.features.map(
-                      (feature, index) => (
+                {result.features && result.features.length > 0 && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Features:
+                    </Typography>
+                    <ul>
+                      {result.features.map((feature, index) => (
                         <li key={index}>
                           <Typography>{feature}</Typography>
                         </li>
-                      )
-                    )
-                  ) : (
-                    <li>
-                      <Typography>N/A</Typography>
-                    </li>
-                  )}
-                </ul>
+                      ))}
+                    </ul>
+                  </>
+                )}
 
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Guidance:
-                </Typography>
-                <ul>
-                  {result.guidance ? (
-                    result.guidance.map(
-                      (guidance, index) => (
+                {result.features && result.features.length > 0 && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Guidance:
+                    </Typography>
+                    <ul>
+                      {result.guidance.map((guidance, index) => (
                         <li key={index}>
                           <Typography>{guidance}</Typography>
                         </li>
-                      )
-                    )
-                  ) : (
-                    <li>
-                      <Typography>N/A</Typography>
-                    </li>
-                  )}
-                </ul>
+                      ))}
+                    </ul>
+                  </>
+                )}
 
                 <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Recommendations:
                 </Typography>
                 <Typography>{diagnosisResult.recommendation}</Typography>
               </Grid>
-              <Grid item xs={5}>
-                <Box
-                  sx={{
-                    width: "70%",
-                    maxHeight: "50vh",
-                    overflow: "hidden",
-                    margin: "0 auto",
-                  }}
-                >
-                  <img
-                    src={`data:image/png;base64,${result.gradcam || ""}`}
-                    alt="Localized Lesion"
-                    style={{
-                      width: "auto",
-                      maxHeight: "100%",
-                      maxWidth: "100%",
+              {result.gradcam && (
+                <Grid item xs={5}>
+                  <Box
+                    sx={{
+                      width: "70%",
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                      margin: "0 auto",
                     }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "data:image/png;base64,N/A";
-                    }}
-                  />
-                </Box>
-              </Grid>
+                  >
+                    <img
+                      src={`data:image/png;base64,${result.gradcam}`}
+                      alt="Localized Lesion"
+                      style={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
             </Grid>
 
             <Grid
@@ -326,36 +318,39 @@ function Diagnosis() {
               {[
                 result.processed_original_image,
                 result.processed_mask_image,
-              ].map((imageSrc, index) => (
-                <Grid item xs={5} key={index}>
-                  <Box
-                    sx={{
-                      width: "100%",
-                      maxHeight: "50vh",
-                      overflow: "hidden",
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start",
-                      border: "1px solid gray",
-                      marginY: "1rem",
-                    }}
-                  >
-                    <img
-                      src={`data:image/png;base64,${imageSrc || ""}`}
-                      alt={`Localized Lesion ${index + 1}`}
-                      style={{
-                        width: "auto",
-                        maxHeight: "100%",
-                        maxWidth: "100%",
-                      }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "data:image/png;base64,N/A";
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              ))}
+              ].map(
+                (imageSrc, index) =>
+                  imageSrc && (
+                    <Grid item xs={5} key={index}>
+                      <Box
+                        sx={{
+                          width: "100%",
+                          maxHeight: "50vh",
+                          overflow: "hidden",
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          alignItems: "flex-start",
+                          border: "1px solid gray",
+                          marginY: "1rem",
+                        }}
+                      >
+                        <img
+                          src={`data:image/png;base64,${imageSrc}`}
+                          alt={`Localized Lesion ${index + 1}`}
+                          style={{
+                            width: "auto",
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                          }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "data:image/png;base64,N/A";
+                          }}
+                        />
+                      </Box>
+                    </Grid>
+                  )
+              )}
             </Grid>
           </Box>
 
