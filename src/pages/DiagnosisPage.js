@@ -3,10 +3,15 @@ import Diagnosis from "../components/Diagnosis";
 import { Container } from "@mui/material";
 import styled from "styled-components";
 import backgroundImage from "../assets/background-watermark.png";
+import ImagePoweredAnalysis from "../components/ImagePoweredAnalysis";
 
 const DiagnosisPage = () => {
   return (
     <>
+      <ImagePoweredAnalysis
+        title="Breast Guard: Report"
+        description="This software is designed to detect the breast cancers using multi image modalities. In this user manual, we will explain how to use the software to detect your breast cancer."
+      />
       <StyledContainer>
         <Diagnosis />
       </StyledContainer>

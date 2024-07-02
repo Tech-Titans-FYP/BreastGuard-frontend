@@ -177,18 +177,18 @@ function Diagnosis() {
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, pl: 6, color: colors.darkNavy }}>
+          <Box sx={{ mt: 3, pl: 6, pb: 6, color: colors.darkNavy }}>
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
               Patient Details
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Full Name: {formDetails.fullName || "N/A"}
+              Full Name: {formDetails?.fullName || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Age: {formDetails.age || "N/A"}
+              Age: {formDetails?.age || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Gender: {formDetails.gender || "N/A"}
+              Gender: {formDetails?.gender || "N/A"}
             </Typography>
 
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
@@ -203,13 +203,17 @@ function Diagnosis() {
               }}
             >
               <img
-                src={`data:image/png;base64,${uploadedImages[0].url}`}
+                src={`data:image/png;base64,${uploadedImages[0]?.url || ""}`}
                 alt="Original"
                 style={{
                   width: "50%",
                   height: "auto",
                   maxWidth: "100%",
                   maxHeight: "100%",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "data:image/png;base64,N/A";
                 }}
               />
             </Box>

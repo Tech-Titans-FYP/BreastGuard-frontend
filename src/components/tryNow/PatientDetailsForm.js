@@ -53,6 +53,7 @@ const PatientDetailsForm = ({
   isUploading,
   uploadedImages,
   handleUpload,
+  setOpenCustomDialog,
 }) => {
   const onDiscoverClick = () => {
     if (uploadedImages.length > 0) {
@@ -60,6 +61,7 @@ const PatientDetailsForm = ({
       handleUpload();
     }
   };
+
   return (
     <Box sx={formStyle}>
       <Typography variant="h6" gutterBottom textAlign="center">
