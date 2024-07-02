@@ -232,19 +232,28 @@ function Diagnosis() {
                 </Typography>
                 <Typography>{result.subtype || "N/A"}</Typography>
 
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                {/* <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Description:
                 </Typography>
                 <Typography>
                   {result.subtype_description?.description || "N/A"}
-                </Typography>
+                </Typography> */}
+
+                {result.subtype_description && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Description:
+                    </Typography>
+                    <Typography>{result.subtype_description}</Typography>
+                  </>
+                )}
 
                 <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                   Features:
                 </Typography>
                 <ul>
-                  {result.subtype_description?.features ? (
-                    result.subtype_description.features.map(
+                  {result.features ? (
+                    result.features.map(
                       (feature, index) => (
                         <li key={index}>
                           <Typography>{feature}</Typography>
@@ -262,8 +271,8 @@ function Diagnosis() {
                   Guidance:
                 </Typography>
                 <ul>
-                  {result.subtype_description?.guidance ? (
-                    result.subtype_description.guidance.map(
+                  {result.guidance ? (
+                    result.guidance.map(
                       (guidance, index) => (
                         <li key={index}>
                           <Typography>{guidance}</Typography>
