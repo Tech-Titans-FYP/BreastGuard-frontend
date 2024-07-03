@@ -1,5 +1,3 @@
-//UploadSelection code
-
 import React, { useState } from "react";
 import {
   Typography,
@@ -24,8 +22,10 @@ function UploadSection() {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedCardType, setUploadedCardType] = useState(null);
-  const [zoom, setZoom] = useState(100);
-  const [rotation, setRotation] = useState(0); // Degrees
+  const [zoom, setZoom] = useState(50);
+  const [rotation, setRotation] = useState(0);
+  const [width, setWidth] = useState(100);
+  const [height, setHeight] = useState(100);
   const [adjustmentsApplied, setAdjustmentsApplied] = useState(false);
   const [fullName, setFullName] = useState("");
   const [age, setAge] = useState("");
@@ -33,9 +33,11 @@ function UploadSection() {
   const [openDialog, setOpenDialog] = useState(false);
   const [openCustomDialog, setOpenCustomDialog] = useState(false);
   const [customDialogMessage, setCustomDialogMessage] = useState("");
+  const [showAdjustments, setShowAdjustments] = useState(true); // New state variable
 
   const handleConfirmAdjustments = () => {
     applyAdjustmentsAndSetImage(); // This will apply the adjustments and open the form
+    setShowAdjustments(false); // Hide adjustment options
     setOpenDialog(false); // Close the dialog
   };
 
@@ -47,13 +49,16 @@ function UploadSection() {
   };
 
   // Apply styles for zoom and rotation to the image
-  const imageStyles = {
-    maxWidth: "100%",
-    maxHeight: "300px",
-    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-    transformOrigin: "center",
-    transition: "transform 0.3s ease",
-  };
+  // const imageStyles = {
+  //   maxWidth: "100%",
+  //   maxHeight: "300px",
+  //   transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+  //   width: `${width}%`,
+  //   height: `${height}%`,
+  //   objectFit: "cover",
+  //   transformOrigin: "center",
+  //   transition: "transform 0.3s ease, width 0.3s ease, height 0.3s ease",
+  // };
 
   const handleUploadMammogram = async (imageData) => {
     // if image type is mammogram then do, navigate to the /results page and print the result
@@ -335,7 +340,7 @@ function UploadSection() {
         // If an image has been uploaded, display the image and the button only
         <>
           {/* Render the uploaded image */}
-          {uploadedImages.map((image, index) => (
+          {/* {uploadedImages.map((image, index) => (
             <Box key={index} sx={{ textAlign: "center", margin: 5 }}>
               <img
                 src={`data:image/png;base64,${image.url}`}
@@ -343,18 +348,60 @@ function UploadSection() {
                 style={imageStyles}
               />
             </Box>
-          ))}
-          {/* Sliders for zoom and rotation */}
-          <ImageAdjustment
-            zoom={zoom}
-            setZoom={setZoom}
-            rotation={rotation}
-            setRotation={setRotation}
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            handleConfirmAdjustments={handleConfirmAdjustments}
-            uploadedImages={uploadedImages}
-          />
+          ))} */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: "2rem",
+            }}
+          >
+            <Box
+              sx={{
+                width: 350,
+                height: 350,
+                border: "10px solid gray",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "white",
+                overflow: "hidden",
+              }}
+            >
+              {uploadedImages.length > 0 && (
+                <img
+                  src={`data:image/png;base64,${
+                    uploadedImages[uploadedImages.length - 1].url
+                  }`}
+                  alt="Uploaded"
+                  style={{
+                    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                    width: `${width}%`,
+                    height: `${height}%`,
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+          {/* Sliders for zoom, rotation, width, and height */}
+          {showAdjustments && (
+            <ImageAdjustment
+              zoom={zoom}
+              setZoom={setZoom}
+              rotation={rotation}
+              setRotation={setRotation}
+              width={width}
+              setWidth={setWidth}
+              height={height}
+              setHeight={setHeight}
+              openDialog={openDialog}
+              setOpenDialog={setOpenDialog}
+              handleConfirmAdjustments={handleConfirmAdjustments}
+              uploadedImages={uploadedImages}
+            />
+          )}
 
           {/* Conditionally render the new form section */}
           {adjustmentsApplied && (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Button,
@@ -55,6 +55,18 @@ const PatientDetailsForm = ({
   handleUpload,
   setOpenCustomDialog,
 }) => {
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [privacyPolicy, setPrivacyPolicy] = useState(false);
+
+  useEffect(() => {
+    // Check if all required fields are filled and privacy policy is agreed
+    if (fullName && age && gender && privacyPolicy) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [fullName, age, gender, privacyPolicy]);
+
   const onDiscoverClick = () => {
     if (uploadedImages.length > 0) {
       // Call the handleUpload function passed as a prop
@@ -105,7 +117,7 @@ const PatientDetailsForm = ({
         </TextField>
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox />}
+            control={<Checkbox checked={privacyPolicy} onChange={(e) => setPrivacyPolicy(e.target.checked)} />}
             label="I agree to the Privacy Policy"
           />
         </FormGroup>
@@ -123,7 +135,7 @@ const PatientDetailsForm = ({
               },
             }}
             onClick={onDiscoverClick}
-            disabled={isUploading || uploadedImages.length === 0}
+            disabled={isUploading || uploadedImages.length === 0 || !isFormValid}
           >
             Discover Your Diagnosis!
           </Button>

@@ -1,15 +1,46 @@
-import React from 'react';
-import { Typography, Box, Slider, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import React from "react";
+import {
+  Typography,
+  Box,
+  Slider,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import { colors } from "../../consts/Colors";
 
-const ImageAdjustment = ({ zoom, setZoom, rotation, setRotation, openDialog, setOpenDialog, handleConfirmAdjustments, uploadedImages }) => {
-  // Handlers for zoom and rotation
+const ImageAdjustment = ({
+  zoom,
+  setZoom,
+  rotation,
+  setRotation,
+  width,
+  setWidth,
+  height,
+  setHeight,
+  openDialog,
+  setOpenDialog,
+  handleConfirmAdjustments,
+  uploadedImages,
+}) => {
+  // Handlers for zoom, rotation, width, and height
   const handleZoomChange = (event, newZoom) => {
     setZoom(newZoom);
   };
 
   const handleRotationChange = (event, newRotation) => {
     setRotation(newRotation);
+  };
+
+  const handleWidthChange = (event, newWidth) => {
+    setWidth(newWidth);
+  };
+
+  const handleHeightChange = (event, newHeight) => {
+    setHeight(newHeight);
   };
 
   const handleOpenDialog = () => {
@@ -28,7 +59,7 @@ const ImageAdjustment = ({ zoom, setZoom, rotation, setRotation, openDialog, set
           aria-labelledby="zoom-slider"
           valueLabelDisplay="auto"
           min={50}
-          max={120}
+          max={100}
           sx={{
             color: colors.skyBlue,
             maxWidth: "60%",
@@ -49,7 +80,63 @@ const ImageAdjustment = ({ zoom, setZoom, rotation, setRotation, openDialog, set
             maxWidth: "60%",
           }}
         />
+        <Typography id="width-slider" gutterBottom>
+          Width
+        </Typography>
+        <Slider
+          value={width}
+          onChange={handleWidthChange}
+          aria-labelledby="width-slider"
+          valueLabelDisplay="auto"
+          min={50}
+          max={100}
+          sx={{
+            color: colors.skyBlue,
+            maxWidth: "60%",
+          }}
+        />
+        <Typography id="height-slider" gutterBottom>
+          Height
+        </Typography>
+        <Slider
+          value={height}
+          onChange={handleHeightChange}
+          aria-labelledby="height-slider"
+          valueLabelDisplay="auto"
+          min={50}
+          max={100}
+          sx={{
+            color: colors.skyBlue,
+            maxWidth: "60%",
+          }}
+        />
       </Box>
+
+      {/* <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "2rem" }}>
+        <Box sx={{
+          width: 400,
+          height: 400,
+          border: "2px solid gray",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "white",
+          overflow: "hidden"
+        }}>
+          {uploadedImages.length > 0 && (
+            <img
+              src={`data:image/png;base64,${uploadedImages[uploadedImages.length - 1].url}`}
+              alt="Uploaded"
+              style={{
+                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
+                width: `${width}%`,
+                height: `${height}%`,
+                objectFit: "cover",
+              }}
+            />
+          )}
+        </Box>
+      </Box> */}
 
       <Box
         sx={{
