@@ -133,7 +133,7 @@ function Diagnosis() {
               position: "absolute",
               top: "50%",
               left: "50%",
-              transform: "translate(-50%, -50%) rotate(-45deg)",
+              transform: "translate(-50%, -50%) rotate(-40deg)",
               opacity: 0.1,
               zIndex: 9,
               width: "60%",
@@ -177,7 +177,7 @@ function Diagnosis() {
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, pl: 6, pb: 6, color: colors.darkNavy }}>
+          <Box sx={{ mt: 3, px: 6, pb: 6, color: colors.darkNavy }}>
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
               Patient Details
             </Typography>
@@ -352,6 +352,19 @@ function Diagnosis() {
                   )
               )}
             </Grid>
+
+            <hr/>
+            <Typography
+            sx={{
+              fontStyle: "italic",
+              color: "gray"
+            }}
+            >
+              It should be noted that the breastGuard team cannot be held
+              responsible for any errors or inaccuracies in the automated
+              generated reports. Use of the system is entirely at the user's own
+              risk.
+            </Typography>
           </Box>
 
           <Box sx={{ backgroundColor: colors.darkNavy, p: 1 }}>
