@@ -7,6 +7,10 @@ import {
   FormControlLabel,
   Checkbox,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { colors } from "../../consts/Colors";
 
@@ -42,6 +46,16 @@ const textFieldStyle = {
   },
 };
 
+const linkButtonStyle = {
+  background: "none",
+  border: "none",
+  padding: 0,
+  fontFamily: "Montserrat, sans-serif",
+  color: "#027B89",
+  cursor: "pointer",
+  display: "inline",
+};
+
 const PatientDetailsForm = ({
   fullName,
   setFullName,
@@ -57,6 +71,7 @@ const PatientDetailsForm = ({
 }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [privacyPolicy, setPrivacyPolicy] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     // Check if all required fields are filled and privacy policy is agreed
@@ -72,6 +87,14 @@ const PatientDetailsForm = ({
       // Call the handleUpload function passed as a prop
       handleUpload();
     }
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -117,8 +140,20 @@ const PatientDetailsForm = ({
         </TextField>
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox checked={privacyPolicy} onChange={(e) => setPrivacyPolicy(e.target.checked)} />}
-            label="I agree to the Privacy Policy"
+            control={
+              <Checkbox
+                checked={privacyPolicy}
+                onChange={(e) => setPrivacyPolicy(e.target.checked)}
+              />
+            }
+            label={
+              <span>
+                I agree to the{" "}
+                <button onClick={handleClickOpen} style={linkButtonStyle}>
+                  Privacy Policy
+                </button>
+              </span>
+            }
           />
         </FormGroup>
         <Box sx={{ textAlign: "center" }}>
@@ -135,12 +170,37 @@ const PatientDetailsForm = ({
               },
             }}
             onClick={onDiscoverClick}
-            disabled={isUploading || uploadedImages.length === 0 || !isFormValid}
+            disabled={
+              isUploading || uploadedImages.length === 0 || !isFormValid
+            }
           >
             Discover Your Diagnosis!
           </Button>
         </Box>
       </form>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Privacy Policy</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            At BreastGuard, accessible from breastguard.live, one of our main
+            priorities is the privacy of our visitors. This Privacy Policy
+            document contains types of information that is collected and
+            recorded by BreastGuard and how we use it. If you have additional
+            questions or require more information about our Privacy Policy, do
+            not hesitate to contact us. This Privacy Policy applies only to our
+            online activities and is valid for visitors to our website with
+            regards to the information that they shared and/or collect in
+            BreastGuard. This policy is not applicable to any information
+            collected offline or via channels other than this website.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
