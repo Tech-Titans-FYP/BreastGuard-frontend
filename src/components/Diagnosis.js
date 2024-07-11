@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Paper, Typography, Container, Grid, Box } from "@mui/material";
+import { Paper, Typography, Container, Grid, Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
@@ -14,21 +14,17 @@ function Diagnosis() {
     result: {},
     formDetails: {},
   };
-  const uploadedImages =
-    JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
+  const uploadedImages = JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
 
-  const [loading, setLoading] = useState(true); // Start with loading true
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate a loading process here
     const timer = setTimeout(() => {
-      setLoading(false); // Turn off loading state after a delay
+      setLoading(false);
     }, 2000);
-
-    return () => clearTimeout(timer); // Cleanup the timer
+    return () => clearTimeout(timer);
   }, []);
 
-  // Include your logo and apply animation styles
   const loadingAnimationStyle = `
     .center {
       height: 100vh;
@@ -85,20 +81,17 @@ function Diagnosis() {
 
   const downloadReport = () => {
     const reportElement = document.getElementById("reportArea");
-
-    // Temporarily hide elements that should not be in the PDF
     const elementsToHide = reportElement.querySelectorAll(".hide-on-pdf");
     elementsToHide.forEach((el) => (el.style.display = "none"));
 
     html2canvas(reportElement, {
-      scale: 2, // You can adjust the scale as needed
+      scale: 2,
       useCORS: true,
       backgroundColor: null,
     })
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
-        const pdfWidth = 210; // A4 width in mm
-        // const pdfHeight = 297; // A4 height in mm
+        const pdfWidth = 210;
         const imgHeight = (canvas.height * pdfWidth) / canvas.width;
         const pdf = new jsPDF({
           orientation: "p",
@@ -106,16 +99,13 @@ function Diagnosis() {
           format: "a4",
           compress: true,
         });
-        // Add image to PDF
         pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, imgHeight);
         pdf.save("breast-cancer-analysis-report.pdf");
 
-        // Restore hidden elements after capturing
         elementsToHide.forEach((el) => (el.style.display = ""));
       })
       .catch((err) => {
         console.error("Could not generate the report pdf", err);
-        // Restore hidden elements if there's an error
         elementsToHide.forEach((el) => (el.style.display = ""));
       });
   };
@@ -124,7 +114,6 @@ function Diagnosis() {
     <Container>
       <style>{loadingAnimationStyle}</style>
       {loading ? (
-        // Display the loading animation if in loading state
         <div className="center">
           <div className="wave"></div>
           <div className="wave"></div>
@@ -147,19 +136,19 @@ function Diagnosis() {
               transform: "translate(-50%, -50%) rotate(-45deg)",
               opacity: 0.1,
               zIndex: 9,
-              width: "60%", // Increase this percentage to make the watermark larger
-              height: "auto", // Setting height to auto maintains the aspect ratio of the image
-              maxWidth: "100%", // You can adjust or remove this if needed
-              maxHeight: "100%", // You can adjust or remove this if needed
+              width: "60%",
+              height: "auto",
+              maxWidth: "100%",
+              maxHeight: "100%",
             }}
           >
             <img
               src={watermark}
               alt="Watermark"
               style={{
-                width: "100%", // Ensure the image covers the full width of the Box container
-                height: "auto", // Maintain aspect ratio
-                objectFit: "contain", // Ensure the image is contained within its element
+                width: "100%",
+                height: "auto",
+                objectFit: "contain",
               }}
             />
           </Box>
@@ -184,7 +173,7 @@ function Diagnosis() {
                 textAlign: "center",
               }}
             >
-              Breast Guard: Brest Cancer Analysis PDF Report
+              Breast Guard: Breast Cancer Analysis Report
             </Typography>
           </Box>
 
@@ -203,115 +192,191 @@ function Diagnosis() {
             </Typography>
 
             <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
-              Original Breast Image
-            </Typography>
-            <Box
-              sx={{
-                width: "50%",
-                maxHeight: "50vh",
-                overflow: "hidden",
-                marginBottom: "1rem",
-              }}
-            >
-              <img
-                src={`data:image/png;base64,${uploadedImages[0].url}`}
-                alt="Original"
-                style={{
-                  width: "50%",
-                  height: "auto",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
-              />
-            </Box>
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
               Diagnosis Results
             </Typography>
 
-            <Grid container alignItems="center" justifyContent="center">
-              <Grid item xs={7}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
                 <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                  Classification:
+                  Original Breast Image:
                 </Typography>
-                <Typography>{result.classification || "N/A"}</Typography>
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Diagnosis:
-                </Typography>
-                <Typography>{result.subtype || "N/A"}</Typography>
-
-                {result.subtype_description && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Description:
-                    </Typography>
-                    <Typography>{result.subtype_description}</Typography>
-                  </>
-                )}
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Recommendations:
-                </Typography>
-                <Typography>{diagnosisResult.recommendation}</Typography>
-              </Grid>
-              <Grid item xs={5}>
                 <Box
                   sx={{
-                    width: "70%", // This will now take up 100% of the Grid item
+                    width: "100%",
                     maxHeight: "50vh",
                     overflow: "hidden",
-                    margin: "0 auto",
+                  }}
+                >
+                  <img
+                    src={`data:image/png;base64,${uploadedImages[0].url}`}
+                    alt="Original"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={4}>
+                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                  Grad-CAM Visualization:
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    maxHeight: "50vh",
+                    overflow: "hidden",
                   }}
                 >
                   <img
                     src={`data:image/png;base64,${result.gradcam}`}
-                    alt="Localized Lesion"
+                    alt="Grad-CAM"
                     style={{
-                      width: "auto", // Auto width for maintaining aspect ratio
-                      maxHeight: "100%", // Maximum height is 100% of the container
-                      maxWidth: "100%", // Maximum width is 100% of the container
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={4}>
+                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                  Segmentation Visualization:
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    maxHeight: "50vh",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={`data:image/png;base64,${result.segmented_image}`}
+                    alt="Segmented"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
                     }}
                   />
                 </Box>
               </Grid>
             </Grid>
 
-            <Grid
-              container
-              alignItems="flex-start"
-              justifyContent="flex-start"
-              spacing={2}
-            >
-              {[
-                result.processed_original_image,
-                result.processed_mask_image,
-              ].map(
-                (imageSrc, index) =>
-                  imageSrc && (
-                    <Grid item xs={5} key={index}>
-                      <Box
-                        sx={{
-                          width: "100%", // Take up 100% of the Grid item
-                          maxHeight: "50vh",
-                          overflow: "hidden",
-                          display: "flex",
-                          justifyContent: "flex-start", // Align image horizontally to the start
-                          alignItems: "flex-start", // Align image vertically to the start
-                          border: "1px solid gray",
-                          marginY: "1rem",
-                        }}
-                      >
-                        <img
-                          src={`data:image/png;base64,${imageSrc}`}
-                          alt={`Localized Lesion ${index + 1}`}
-                          style={{
-                            width: "auto", // Auto width for maintaining aspect ratio
-                            maxHeight: "100%", // Maximum height is 100% of the container
-                            maxWidth: "100%", // Maximum width is 100% of the container
-                          }}
-                        />
-                      </Box>
+            <Grid container alignItems="flex-start" justifyContent="flex-start">
+              <Grid item xs={12}>
+                <Grid container alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Grid item>
+                    <Typography sx={{ fontWeight: "bold" }}>
+                      Classification:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography>{result.classification || "N/A"}</Typography>
+                  </Grid>
+                </Grid>
+
+                {result.classification === "Malignant" && (
+                  <>
+                    <Grid container alignItems="flex-start" justifyContent="flex-start">
+                      <Grid item xs={3}>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          SubType Identification
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Typography sx={{ mb: 1, mt: 2 }}>
+                          {result.predicted_subtype || "N/A"}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                  )
-              )}
+
+                    <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
+                      Tumor Size Measurement:
+                    </Typography>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Measurement</TableCell>
+                          <TableCell>Value (Pixels)</TableCell>
+                          <TableCell>Value (mm)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Tumor Size</TableCell>
+                          <TableCell>{result.tumor_size_px?.toFixed(2) || "N/A"}</TableCell>
+                          <TableCell>{result.tumor_size_mm?.toFixed(2) || "N/A"}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><b>Tumor Size Category</b></TableCell>
+                          <TableCell colSpan={2}>{result.tumor_category || "N/A"}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+                    <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
+                      Tumor Shape Measurement:
+                    </Typography>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Measurement</TableCell>
+                          <TableCell>Value (Pixels)</TableCell>
+                          <TableCell>Value (mm)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Area</TableCell>
+                          <TableCell>{result.shape_features_px.area.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.area.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Perimeter</TableCell>
+                          <TableCell>{result.shape_features_px.perimeter.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.perimeter.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Aspect Ratio</TableCell>
+                          <TableCell>{result.shape_features_px.aspect_ratio.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.aspect_ratio.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Circularity</TableCell>
+                          <TableCell>{result.shape_features_px.circularity.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.circularity.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Major Axis</TableCell>
+                          <TableCell>{result.shape_features_px.MA.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.MA.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Minor Axis</TableCell>
+                          <TableCell>{result.shape_features_px.ma.toFixed(2)}</TableCell>
+                          <TableCell>{result.shape_features_mm.ma.toFixed(2)}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><b>Tumor Shape Category</b></TableCell>
+                          <TableCell colSpan={2}>{result.shape_category}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Recommendations:
+                    </Typography>
+                    <Typography>{diagnosisResult.recommendation}</Typography>
+                  </>
+                )}
+              </Grid>
             </Grid>
           </Box>
 
