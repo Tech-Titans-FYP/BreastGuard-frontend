@@ -284,7 +284,7 @@ function Diagnosis() {
 
                 {result.classification === "Malignant" && (
                   <>
-                    <Grid container alignItems="flex-start" justifyContent="flex-start">
+                    {/* <Grid container alignItems="flex-start" justifyContent="flex-start">
                       <Grid item xs={3}>
                         <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                           SubType Identification
@@ -295,7 +295,7 @@ function Diagnosis() {
                           {result.predicted_subtype || "N/A"}
                         </Typography>
                       </Grid>
-                    </Grid>
+                    </Grid> */}
 
                     <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
                       Tumor Size Measurement:
