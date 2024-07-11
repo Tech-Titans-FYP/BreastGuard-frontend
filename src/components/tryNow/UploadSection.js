@@ -33,46 +33,27 @@ function UploadSection() {
   const [openDialog, setOpenDialog] = useState(false);
   const [openCustomDialog, setOpenCustomDialog] = useState(false);
   const [customDialogMessage, setCustomDialogMessage] = useState("");
-  const [showAdjustments, setShowAdjustments] = useState(true); // New state variable
+  const [showAdjustments, setShowAdjustments] = useState(true);
 
   const handleConfirmAdjustments = () => {
-    applyAdjustmentsAndSetImage(); // This will apply the adjustments and open the form
-    setShowAdjustments(false); // Hide adjustment options
-    setOpenDialog(false); // Close the dialog
+    applyAdjustmentsAndSetImage();
+    setShowAdjustments(false);
+    setOpenDialog(false);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Here you can handle the submission of the form data
     console.log({ fullName, age, gender });
-    // You may want to send this data to a backend or process it further
   };
 
-  // Apply styles for zoom and rotation to the image
-  // const imageStyles = {
-  //   maxWidth: "100%",
-  //   maxHeight: "300px",
-  //   transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-  //   width: `${width}%`,
-  //   height: `${height}%`,
-  //   objectFit: "cover",
-  //   transformOrigin: "center",
-  //   transition: "transform 0.3s ease, width 0.3s ease, height 0.3s ease",
-  // };
-
-  const handleUploadMammogram = async (imageData) => {
-    // if image type is mammogram then do, navigate to the /results page and print the result
-  };
+  const handleUploadMammogram = async (imageData) => {};
 
   const handleUploadUltrasound = async (imageData) => {
     setIsUploading(true);
 
-    // Use the imageData directly if it's already the base64 string, otherwise extract it
     const base64Url = imageData.url.startsWith("data:")
       ? imageData.url.split(",")[1]
       : imageData.url;
-
-    console.log("Base64 URL:", base64Url);
 
     const payload = {
       image: [
@@ -83,9 +64,6 @@ function UploadSection() {
         },
       ],
     };
-
-    // Log the payload to confirm it's correct before sending
-    console.log("Payload to send:", payload); // This will format the log for better readability
 
     try {
       const response = await fetch(
@@ -99,28 +77,23 @@ function UploadSection() {
         }
       );
 
-      // if (!response.ok) {
-      //   throw new Error(`HTTP error: ${response.status}`);
-      // }
-
       const result = await response.json();
       console.log(result);
 
       if (!response.ok) {
         setIsUploading(false);
         if (result.message) {
-          // Set the message and show the dialog
           setCustomDialogMessage(result.message);
           setOpenCustomDialog(true);
         }
       } else {
-        // Save the base64 image data to sessionStorage
         sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
-        // Navigate to the diagnosis page with the server's result
+        const fileName = imageData.name.split(".").slice(0, -1).join(".");
         navigate("/diagnosis", {
           state: {
             result: result,
             formDetails: { fullName, age, gender },
+            fileName: fileName, // Pass the file name without extension
           },
         });
       }
@@ -134,12 +107,9 @@ function UploadSection() {
   const handleUploadMRI = async (imageData) => {
     setIsUploading(true);
 
-    // Use the imageData directly if it's already the base64 string, otherwise extract it
     const base64Url = imageData.url.startsWith("data:")
       ? imageData.url.split(",")[1]
       : imageData.url;
-
-    console.log("Base64 URL:", base64Url);
 
     const payload = {
       image: [
@@ -150,9 +120,6 @@ function UploadSection() {
         },
       ],
     };
-
-    // Log the payload to confirm it's correct before sending
-    console.log("Payload to send:", payload); // This will format the log for better readability
 
     try {
       const response = await fetch(
@@ -173,11 +140,14 @@ function UploadSection() {
       const result = await response.json();
       console.log(result);
 
-      // Save the base64 image data to sessionStorage
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
-
+      const fileName = imageData.name.split(".").slice(0, -1).join(".");
       navigate("/diagnosis", {
-        state: { result: result },
+        state: {
+          result: result,
+          formDetails: { fullName, age, gender },
+          fileName: fileName,
+        }, // Pass the file name without extension
       });
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
@@ -189,12 +159,9 @@ function UploadSection() {
   const handleUploadHistopathological = async (imageData) => {
     setIsUploading(true);
 
-    // Use the imageData directly if it's already the base64 string, otherwise extract it
     const base64Url = imageData.url.startsWith("data:")
       ? imageData.url.split(",")[1]
       : imageData.url;
-
-    console.log("Base64 URL:", base64Url);
 
     const payload = {
       image: [
@@ -205,9 +172,6 @@ function UploadSection() {
         },
       ],
     };
-
-    // Log the payload to confirm it's correct before sending
-    console.log("Payload to send:", payload); // This will format the log for better readability
 
     try {
       const response = await fetch(
@@ -228,13 +192,13 @@ function UploadSection() {
       const result = await response.json();
       console.log(result);
 
-      // Save the base64 image data to sessionStorage
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
-
+      const fileName = imageData.name.split(".").slice(0, -1).join(".");
       navigate("/diagnosis", {
         state: {
           result: result,
-          formDetails: { fullName, age, gender }, // Assuming these state variables hold your form data
+          formDetails: { fullName, age, gender },
+          fileName: fileName, // Pass the file name without extension
         },
       });
     } catch (error) {
@@ -246,7 +210,6 @@ function UploadSection() {
 
   const handleUpload = async () => {
     setIsUploading(true);
-    // Determine the type of image and call the appropriate upload function
     const lastImage = uploadedImages[uploadedImages.length - 1];
     if (lastImage) {
       switch (lastImage.type) {
@@ -269,7 +232,6 @@ function UploadSection() {
     setIsUploading(false);
   };
 
-  // Update the acceptedFiles to an array of file types
   const uploadCards = [
     {
       title: "Upload Mammogram Images",
@@ -293,41 +255,30 @@ function UploadSection() {
     },
   ];
 
-  // Assuming you have a function to trigger this conversion
   const applyAdjustmentsAndSetImage = () => {
-    // Ensure there's an image to adjust
     if (uploadedImages.length === 0) return;
 
     const lastImage = uploadedImages[uploadedImages.length - 1];
-
-    // Create an off-screen canvas
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    // Create a new Image object
     const image = new Image();
     image.src = `data:image/png;base64,${lastImage.url}`;
     image.onload = () => {
-      // Set canvas size to the image size
       canvas.width = image.width;
       canvas.height = image.height;
 
-      // Apply zoom and rotation
-      // Note: You might need to adjust the canvas size and image position based on the rotation
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.scale(zoom / 100, zoom / 100);
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.drawImage(image, -image.width / 2, -image.height / 2);
 
-      // Convert canvas to base64 string
       const adjustedImageBase64 = canvas.toDataURL("image/png");
 
-      // Update the uploadedImages with this new base64 string
-      // Assuming you want to replace the last image, or you can push a new entry
       const updatedImages = [...uploadedImages];
       updatedImages[uploadedImages.length - 1] = {
         ...lastImage,
-        url: adjustedImageBase64.split(",")[1], // Update with new base64 content, removing the Data URL scheme
+        url: adjustedImageBase64.split(",")[1],
       };
       setUploadedImages(updatedImages);
       setAdjustmentsApplied(true);
@@ -337,18 +288,7 @@ function UploadSection() {
   return (
     <Container maxWidth="lg">
       {uploadedCardType ? (
-        // If an image has been uploaded, display the image and the button only
         <>
-          {/* Render the uploaded image */}
-          {/* {uploadedImages.map((image, index) => (
-            <Box key={index} sx={{ textAlign: "center", margin: 5 }}>
-              <img
-                src={`data:image/png;base64,${image.url}`}
-                alt={image.name}
-                style={imageStyles}
-              />
-            </Box>
-          ))} */}
           <Box
             sx={{
               display: "flex",
@@ -385,7 +325,6 @@ function UploadSection() {
               )}
             </Box>
           </Box>
-          {/* Sliders for zoom, rotation, width, and height */}
           {showAdjustments && (
             <ImageAdjustment
               zoom={zoom}
@@ -402,8 +341,6 @@ function UploadSection() {
               uploadedImages={uploadedImages}
             />
           )}
-
-          {/* Conditionally render the new form section */}
           {adjustmentsApplied && (
             <PatientDetailsForm
               fullName={fullName}
@@ -435,7 +372,6 @@ function UploadSection() {
           pb={6}
         >
           {uploadCards.map((card, index) => {
-            // Render only if no card type has been uploaded or if the current card's type was uploaded
             if (!uploadedCardType || card.type === uploadedCardType) {
               return (
                 <Grid item xs={12} sm={6} md={3} key={index}>
@@ -456,12 +392,12 @@ function UploadSection() {
                     acceptedFiles={card.acceptedFiles}
                     customType={card.type}
                     setUploadedImages={setUploadedImages}
-                    onUpload={setUploadedCardType} // Set the uploaded card type
+                    onUpload={setUploadedCardType}
                   />
                 </Grid>
               );
             }
-            return null; // Do not render the other cards
+            return null;
           })}
         </Grid>
       )}

@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Paper, Typography, Container, Grid, Box } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Container,
+  Grid,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
@@ -10,9 +21,10 @@ import logo from "../assets/logo.png";
 
 function Diagnosis() {
   const location = useLocation();
-  const { result, formDetails } = location.state || {
+  const { result, formDetails, fileName } = location.state || {
     result: {},
     formDetails: {},
+    fileName: "N/A",
   };
   const uploadedImages =
     JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
@@ -86,21 +98,41 @@ function Diagnosis() {
     elementsToHide.forEach((el) => (el.style.display = "none"));
 
     html2canvas(reportElement, {
-      scale: 2,
+      scale: 4,
       useCORS: true,
       backgroundColor: null,
     })
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/jpeg", 1.0);
-        const pdfWidth = 210;
-        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
         const pdf = new jsPDF({
           orientation: "p",
           unit: "mm",
           format: "a4",
           compress: true,
         });
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, imgHeight);
+
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        if (imgHeight > pdfHeight) {
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+            heightLeft -= pdfHeight;
+          }
+        } else {
+          pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+        }
+
         pdf.save("breast-cancer-analysis-report.pdf");
         elementsToHide.forEach((el) => (el.style.display = ""));
       })
@@ -221,8 +253,62 @@ function Diagnosis() {
               Diagnosis Results
             </Typography>
 
+            {result.gradcam_image && (
+              <>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Grad-CAM Visualization:
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        maxHeight: "50vh",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <img
+                        src={`data:image/png;base64,${result.gradcam_image}`}
+                        alt="Grad-CAM"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={4}>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Segmentation Visualization:
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        maxHeight: "50vh",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <img
+                        src={`data:image/png;base64,${result.segmented_image}`}
+                        alt="Segmented"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
             <Grid container alignItems="center" justifyContent="center">
-              <Grid item xs={7}>
+              <Grid item xs={12}>
                 {result.classification && (
                   <>
                     <Typography sx={{ fontWeight: "bold", mb: 1 }}>
@@ -232,12 +318,21 @@ function Diagnosis() {
                   </>
                 )}
 
-                {result.classification && (
+                {result.subtype && (
                   <>
                     <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                       Diagnosis:
                     </Typography>
                     <Typography>{result.subtype}</Typography>
+                  </>
+                )}
+
+                {result.predicted_subtype && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Diagnosis:
+                    </Typography>
+                    <Typography>{fileName}</Typography>
                   </>
                 )}
 
@@ -286,15 +381,18 @@ function Diagnosis() {
                 <Typography>{diagnosisResult.recommendation}</Typography>
               </Grid>
               {result.gradcam && (
-                <Grid item xs={5}>
+                <Grid item xs={12}>
                   <Box
                     sx={{
                       width: "70%",
                       maxHeight: "50vh",
                       overflow: "hidden",
-                      margin: "0 auto",
+                      // margin: "0 auto",
                     }}
                   >
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      GRAD-CAM Visualization:
+                    </Typography>
                     <img
                       src={`data:image/png;base64,${result.gradcam}`}
                       alt="Localized Lesion"
@@ -309,12 +407,138 @@ function Diagnosis() {
               )}
             </Grid>
 
+            {result.classification === "Malignant" && (
+              <>
+                {result.tumor_size_px && (
+                  <>
+                    <Typography
+                      variant="h6"
+                      sx={{ mt: 3, mb: 1, fontWeight: "bold" }}
+                    >
+                      Tumor Size Measurement:
+                    </Typography>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Measurement</TableCell>
+                          <TableCell>Value (Pixels)</TableCell>
+                          <TableCell>Value (mm)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Tumor Size</TableCell>
+                          <TableCell>
+                            {result.tumor_size_px?.toFixed(2) || "N/A"}
+                          </TableCell>
+                          <TableCell>
+                            {result.tumor_size_mm?.toFixed(2) || "N/A"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            <b>Tumor Size Category</b>
+                          </TableCell>
+                          <TableCell colSpan={2}>
+                            {result.tumor_category || "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+                    <Typography
+                      variant="h6"
+                      sx={{ mt: 3, mb: 1, fontWeight: "bold" }}
+                    >
+                      Tumor Shape Measurement:
+                    </Typography>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Measurement</TableCell>
+                          <TableCell>Value (Pixels)</TableCell>
+                          <TableCell>Value (mm)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>Area</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.area.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.area.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Perimeter</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.perimeter.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.perimeter.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Aspect Ratio</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.aspect_ratio.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.aspect_ratio.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Circularity</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.circularity.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.circularity.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Major Axis</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.MA.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.MA.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Minor Axis</TableCell>
+                          <TableCell>
+                            {result.shape_features_px.ma.toFixed(2)}
+                          </TableCell>
+                          <TableCell>
+                            {result.shape_features_mm.ma.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            <b>Tumor Shape Category</b>
+                          </TableCell>
+                          <TableCell colSpan={2}>
+                            {result.shape_category}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
+              </>
+            )}
+
+            <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+              U-Net Segmentation Visualization
+            </Typography>
             <Grid
               container
               alignItems="flex-start"
               justifyContent="flex-start"
               spacing={2}
-            >
+            >            
               {[
                 result.processed_original_image,
                 result.processed_mask_image,
@@ -353,12 +577,12 @@ function Diagnosis() {
               )}
             </Grid>
 
-            <hr/>
+            <hr />
             <Typography
-            sx={{
-              fontStyle: "italic",
-              color: "gray"
-            }}
+              sx={{
+                fontStyle: "italic",
+                color: "gray",
+              }}
             >
               It should be noted that the breastGuard team cannot be held
               responsible for any errors or inaccuracies in the automated
