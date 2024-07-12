@@ -21,10 +21,11 @@ import logo from "../assets/logo.png";
 
 function Diagnosis() {
   const location = useLocation();
-  const { result, formDetails, fileName } = location.state || {
+  const { result, formDetails, fileName, type } = location.state || {
     result: {},
     formDetails: {},
     fileName: "N/A",
+    type: "N/A",
   };
   const uploadedImages =
     JSON.parse(sessionStorage.getItem("uploadedImage")) || [];
@@ -142,6 +143,531 @@ function Diagnosis() {
       });
   };
 
+  const renderDiagnosisTable = () => {
+    switch (type) {
+      case "ultrasound":
+        return (
+          <>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Original Breast Image
+            </Typography>
+            <Box
+              sx={{
+                width: "50%",
+                maxHeight: "50vh",
+                overflow: "hidden",
+                marginBottom: "1rem",
+              }}
+            >
+              <img
+                src={`data:image/png;base64,${uploadedImages[0]?.url || ""}`}
+                alt="Original"
+                style={{
+                  width: "50%",
+                  height: "auto",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "data:image/png;base64,N/A";
+                }}
+              />
+            </Box>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Diagnosis Results
+            </Typography>
+
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item xs={12}>
+                {result.classification && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Classification:
+                    </Typography>
+                    <Typography>{result.classification}</Typography>
+                  </>
+                )}
+
+                {result.subtype && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Diagnosis:
+                    </Typography>
+                    <Typography>{result.subtype}</Typography>
+                  </>
+                )}
+
+                {result.subtype_description && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Description:
+                    </Typography>
+                    <Typography>{result.subtype_description}</Typography>
+                  </>
+                )}
+
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Recommendations:
+                </Typography>
+                <Typography>{diagnosisResult.recommendation}</Typography>
+              </Grid>
+              {result.gradcam && (
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      width: "70%",
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                      // margin: "0 auto",
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      GRAD-CAM Visualization:
+                    </Typography>
+                    <img
+                      src={`data:image/png;base64,${result.gradcam}`}
+                      alt="Localized Lesion"
+                      style={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+
+            <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+              U-Net Segmentation Visualization
+            </Typography>
+            <Grid
+              container
+              alignItems="flex-start"
+              justifyContent="flex-start"
+              spacing={2}
+            >
+              {[
+                result.processed_original_image,
+                result.processed_mask_image,
+              ].map(
+                (imageSrc, index) =>
+                  imageSrc && (
+                    <Grid item xs={5} key={index}>
+                      <Box
+                        sx={{
+                          width: "100%",
+                          maxHeight: "50vh",
+                          overflow: "hidden",
+                          display: "flex",
+                          justifyContent: "flex-start",
+                          alignItems: "flex-start",
+                          border: "1px solid gray",
+                          marginY: "1rem",
+                        }}
+                      >
+                        <img
+                          src={`data:image/png;base64,${imageSrc}`}
+                          alt={`Localized Lesion ${index + 1}`}
+                          style={{
+                            width: "auto",
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                          }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "data:image/png;base64,N/A";
+                          }}
+                        />
+                      </Box>
+                    </Grid>
+                  )
+              )}
+            </Grid>
+          </>
+        );
+      case "mammogram":
+        return (
+          <>
+            <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
+              Mammogram Specific Diagnosis Information:
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Measurement</TableCell>
+                  <TableCell>Value</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Mammogram Specific Data</TableCell>
+                  <TableCell>{result.mammogram_data || "N/A"}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </>
+        );
+      case "mri":
+        return (
+          <>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Diagnosis Results
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                  Original Image:
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    maxHeight: "50vh",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={`data:image/png;base64,${
+                      uploadedImages[0]?.url || ""
+                    }`}
+                    alt="Original"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/png;base64,N/A";
+                    }}
+                  />
+                </Box>
+              </Grid>
+
+              {result.gradcam_image && (
+                <Grid item xs={4}>
+                  <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                    Grad-CAM Visualization:
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={`data:image/png;base64,${result.gradcam_image}`}
+                      alt="Grad-CAM"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+
+              {result.segmented_image && (
+                <Grid item xs={4}>
+                  <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                    Segmentation Visualization:
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={`data:image/png;base64,${result.segmented_image}`}
+                      alt="Segmented"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item xs={12}>
+                {result.classification && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Classification:
+                    </Typography>
+                    <Typography>{result.classification}</Typography>
+                  </>
+                )}
+
+                {result.classification === "Malignant" &&
+                  result.predicted_subtype && (
+                    <>
+                      <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                        Diagnosis:
+                      </Typography>
+                      <Typography>{fileName}</Typography>
+                    </>
+                  )}
+
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Recommendations:
+                </Typography>
+                <Typography>{diagnosisResult.recommendation}</Typography>
+              </Grid>
+            </Grid>
+
+            <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
+              Tumor Size Measurement:
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Measurement</TableCell>
+                  <TableCell>Value (Pixels)</TableCell>
+                  <TableCell>Value (mm)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Tumor Size</TableCell>
+                  <TableCell>
+                    {result.tumor_size_px?.toFixed(2) || "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {result.tumor_size_mm?.toFixed(2) || "N/A"}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    <b>Tumor Size Category</b>
+                  </TableCell>
+                  <TableCell colSpan={2}>
+                    {result.tumor_category || "N/A"}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+
+            <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "bold" }}>
+              Tumor Shape Measurement:
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Measurement</TableCell>
+                  <TableCell>Value (Pixels)</TableCell>
+                  <TableCell>Value (mm)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Area</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.area.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.area.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Perimeter</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.perimeter.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.perimeter.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Aspect Ratio</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.aspect_ratio.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.aspect_ratio.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Circularity</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.circularity.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.circularity.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Major Axis</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.MA.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.MA.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Minor Axis</TableCell>
+                  <TableCell>
+                    {result.shape_features_px.ma.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    {result.shape_features_mm.ma.toFixed(2)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    <b>Tumor Shape Category</b>
+                  </TableCell>
+                  <TableCell colSpan={2}>{result.shape_category}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </>
+        );
+      case "histopathological":
+        return (
+          <>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Original Breast Image
+            </Typography>
+            <Box
+              sx={{
+                width: "50%",
+                maxHeight: "50vh",
+                overflow: "hidden",
+                marginBottom: "1rem",
+              }}
+            >
+              <img
+                src={`data:image/png;base64,${uploadedImages[0]?.url || ""}`}
+                alt="Original"
+                style={{
+                  width: "50%",
+                  height: "auto",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "data:image/png;base64,N/A";
+                }}
+              />
+            </Box>
+            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              Diagnosis Results
+            </Typography>
+
+            <Grid container alignItems="center" justifyContent="center">
+              <Grid item xs={12}>
+                {result.classification && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                      Classification:
+                    </Typography>
+                    <Typography>{result.classification}</Typography>
+                  </>
+                )}
+
+                {result.subtype && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Diagnosis:
+                    </Typography>
+                    <Typography>{result.subtype}</Typography>
+                  </>
+                )}
+
+                {result.subtype_description && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Description:
+                    </Typography>
+                    <Typography>{result.subtype_description}</Typography>
+                  </>
+                )}
+
+                {result.features && result.features.length > 0 && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Features:
+                    </Typography>
+                    <ul>
+                      {result.features.map((feature, index) => (
+                        <li key={index}>
+                          <Typography>{feature}</Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {result.features && result.features.length > 0 && (
+                  <>
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      Guidance:
+                    </Typography>
+                    <ul>
+                      {result.guidance.map((guidance, index) => (
+                        <li key={index}>
+                          <Typography>{guidance}</Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                  Recommendations:
+                </Typography>
+                <Typography>{diagnosisResult.recommendation}</Typography>
+              </Grid>
+              {result.gradcam && (
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      width: "70%",
+                      maxHeight: "50vh",
+                      overflow: "hidden",
+                      // margin: "0 auto",
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      GRAD-CAM Visualization:
+                    </Typography>
+                    <img
+                      src={`data:image/png;base64,${result.gradcam}`}
+                      alt="Localized Lesion"
+                      style={{
+                        width: "auto",
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+          </>
+        );
+      default:
+        return (
+          <Typography>No specific diagnosis information available.</Typography>
+        );
+    }
+  };
+
   return (
     <Container>
       <style>{loadingAnimationStyle}</style>
@@ -223,359 +749,7 @@ function Diagnosis() {
               Gender: {formDetails?.gender || "N/A"}
             </Typography>
 
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
-              Original Breast Image
-            </Typography>
-            <Box
-              sx={{
-                width: "50%",
-                maxHeight: "50vh",
-                overflow: "hidden",
-                marginBottom: "1rem",
-              }}
-            >
-              <img
-                src={`data:image/png;base64,${uploadedImages[0]?.url || ""}`}
-                alt="Original"
-                style={{
-                  width: "50%",
-                  height: "auto",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "data:image/png;base64,N/A";
-                }}
-              />
-            </Box>
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
-              Diagnosis Results
-            </Typography>
-
-            {result.gradcam_image && (
-              <>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                      Grad-CAM Visualization:
-                    </Typography>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        maxHeight: "50vh",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        src={`data:image/png;base64,${result.gradcam_image}`}
-                        alt="Grad-CAM"
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          maxWidth: "100%",
-                          maxHeight: "100%",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={4}>
-                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                      Segmentation Visualization:
-                    </Typography>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        maxHeight: "50vh",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        src={`data:image/png;base64,${result.segmented_image}`}
-                        alt="Segmented"
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          maxWidth: "100%",
-                          maxHeight: "100%",
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </>
-            )}
-
-            <Grid container alignItems="center" justifyContent="center">
-              <Grid item xs={12}>
-                {result.classification && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1 }}>
-                      Classification:
-                    </Typography>
-                    <Typography>{result.classification}</Typography>
-                  </>
-                )}
-
-                {result.subtype && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Diagnosis:
-                    </Typography>
-                    <Typography>{result.subtype}</Typography>
-                  </>
-                )}
-
-                {result.predicted_subtype && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Diagnosis:
-                    </Typography>
-                    <Typography>{fileName}</Typography>
-                  </>
-                )}
-
-                {result.subtype_description && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Description:
-                    </Typography>
-                    <Typography>{result.subtype_description}</Typography>
-                  </>
-                )}
-
-                {result.features && result.features.length > 0 && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Features:
-                    </Typography>
-                    <ul>
-                      {result.features.map((feature, index) => (
-                        <li key={index}>
-                          <Typography>{feature}</Typography>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-
-                {result.features && result.features.length > 0 && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Guidance:
-                    </Typography>
-                    <ul>
-                      {result.guidance.map((guidance, index) => (
-                        <li key={index}>
-                          <Typography>{guidance}</Typography>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Recommendations:
-                </Typography>
-                <Typography>{diagnosisResult.recommendation}</Typography>
-              </Grid>
-              {result.gradcam && (
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      width: "70%",
-                      maxHeight: "50vh",
-                      overflow: "hidden",
-                      // margin: "0 auto",
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      GRAD-CAM Visualization:
-                    </Typography>
-                    <img
-                      src={`data:image/png;base64,${result.gradcam}`}
-                      alt="Localized Lesion"
-                      style={{
-                        width: "auto",
-                        maxHeight: "100%",
-                        maxWidth: "100%",
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              )}
-            </Grid>
-
-            {result.classification === "Malignant" && (
-              <>
-                {result.tumor_size_px && (
-                  <>
-                    <Typography
-                      variant="h6"
-                      sx={{ mt: 3, mb: 1, fontWeight: "bold" }}
-                    >
-                      Tumor Size Measurement:
-                    </Typography>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Measurement</TableCell>
-                          <TableCell>Value (Pixels)</TableCell>
-                          <TableCell>Value (mm)</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Tumor Size</TableCell>
-                          <TableCell>
-                            {result.tumor_size_px?.toFixed(2) || "N/A"}
-                          </TableCell>
-                          <TableCell>
-                            {result.tumor_size_mm?.toFixed(2) || "N/A"}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <b>Tumor Size Category</b>
-                          </TableCell>
-                          <TableCell colSpan={2}>
-                            {result.tumor_category || "N/A"}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-
-                    <Typography
-                      variant="h6"
-                      sx={{ mt: 3, mb: 1, fontWeight: "bold" }}
-                    >
-                      Tumor Shape Measurement:
-                    </Typography>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Measurement</TableCell>
-                          <TableCell>Value (Pixels)</TableCell>
-                          <TableCell>Value (mm)</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Area</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.area.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.area.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Perimeter</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.perimeter.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.perimeter.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Aspect Ratio</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.aspect_ratio.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.aspect_ratio.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Circularity</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.circularity.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.circularity.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Major Axis</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.MA.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.MA.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Minor Axis</TableCell>
-                          <TableCell>
-                            {result.shape_features_px.ma.toFixed(2)}
-                          </TableCell>
-                          <TableCell>
-                            {result.shape_features_mm.ma.toFixed(2)}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <b>Tumor Shape Category</b>
-                          </TableCell>
-                          <TableCell colSpan={2}>
-                            {result.shape_category}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </>
-                )}
-              </>
-            )}
-
-            <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-              U-Net Segmentation Visualization
-            </Typography>
-            <Grid
-              container
-              alignItems="flex-start"
-              justifyContent="flex-start"
-              spacing={2}
-            >            
-              {[
-                result.processed_original_image,
-                result.processed_mask_image,
-              ].map(
-                (imageSrc, index) =>
-                  imageSrc && (
-                    <Grid item xs={5} key={index}>
-                      <Box
-                        sx={{
-                          width: "100%",
-                          maxHeight: "50vh",
-                          overflow: "hidden",
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "flex-start",
-                          border: "1px solid gray",
-                          marginY: "1rem",
-                        }}
-                      >
-                        <img
-                          src={`data:image/png;base64,${imageSrc}`}
-                          alt={`Localized Lesion ${index + 1}`}
-                          style={{
-                            width: "auto",
-                            maxHeight: "100%",
-                            maxWidth: "100%",
-                          }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "data:image/png;base64,N/A";
-                          }}
-                        />
-                      </Box>
-                    </Grid>
-                  )
-              )}
-            </Grid>
+            {renderDiagnosisTable()}
 
             <hr />
             <Typography

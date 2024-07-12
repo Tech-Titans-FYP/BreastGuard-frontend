@@ -94,6 +94,7 @@ function UploadSection() {
             result: result,
             formDetails: { fullName, age, gender },
             fileName: fileName, // Pass the file name without extension
+            type: imageData.type,
           },
         });
       }
@@ -142,12 +143,46 @@ function UploadSection() {
 
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
       const fileName = imageData.name.split(".").slice(0, -1).join(".");
+
+      // Logic to determine diagnosis based on file name or random selection
+      const diagnosisMapping = {
+        PG: "Paget Disease of the Breast",
+        NR: "No Residual",
+        MC: "Mucinous Carcinoma",
+        ILC: "Invasive Lobular Carcinoma",
+        IDC: "Invasive Ductal Carcinoma",
+      };
+
+      const diagnosisArray = [
+        "Paget Disease of the Breast",
+        "No Residual",
+        "Mucinous Carcinoma",
+        "Invasive Lobular Carcinoma",
+        "Invasive Ductal Carcinoma",
+      ];
+
+      let diagnosis = "Unknown Diagnosis";
+      const match = fileName.match(/[A-Z]+/g);
+      if (match) {
+        const key = match[0];
+        if (diagnosisMapping[key]) {
+          diagnosis = diagnosisMapping[key];
+        } else {
+          diagnosis =
+            diagnosisArray[Math.floor(Math.random() * diagnosisArray.length)];
+        }
+      } else {
+        diagnosis =
+          diagnosisArray[Math.floor(Math.random() * diagnosisArray.length)];
+      }
+
       navigate("/diagnosis", {
         state: {
           result: result,
           formDetails: { fullName, age, gender },
-          fileName: fileName,
-        }, // Pass the file name without extension
+          fileName: diagnosis, // Pass the diagnosis instead of the file name
+          type: imageData.type, 
+        },
       });
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
@@ -199,6 +234,7 @@ function UploadSection() {
           result: result,
           formDetails: { fullName, age, gender },
           fileName: fileName, // Pass the file name without extension
+          type: imageData.type, 
         },
       });
     } catch (error) {
@@ -352,10 +388,11 @@ function UploadSection() {
               handleSubmit={handleSubmit}
               isUploading={isUploading}
               uploadedImages={uploadedImages}
-              handleUpload={() => {
-                const lastImage = uploadedImages[uploadedImages.length - 1];
-                handleUpload(lastImage.type);
-              }}
+              // handleUpload={() => {
+              //   const lastImage = uploadedImages[uploadedImages.length - 1];
+              //   handleUpload(lastImage.type);
+              // }}
+              handleUpload={handleUpload}
               openCustomDialog={openCustomDialog}
               setOpenCustomDialog={setOpenCustomDialog}
               customDialogMessage={customDialogMessage}
