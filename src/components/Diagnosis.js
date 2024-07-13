@@ -209,6 +209,34 @@ function Diagnosis() {
                       </>
                     )}
 
+                    {result.features && (
+                      <>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          Features:
+                        </Typography>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Feature</TableCell>
+                              <TableCell>Detail</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {Object.entries(result.features)
+                              .filter(
+                                ([_, detail]) => detail !== "Not specified"
+                              )
+                              .map(([feature, detail]) => (
+                                <TableRow key={feature}>
+                                  <TableCell>{feature}</TableCell>
+                                  <TableCell>{detail}</TableCell>
+                                </TableRow>
+                              ))}
+                          </TableBody>
+                        </Table>
+                      </>
+                    )}
+
                     {result.gradcam && (
                       <Grid item xs={12}>
                         <Box
@@ -746,7 +774,7 @@ function Diagnosis() {
               Age: {formDetails?.age || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Gender: {formDetails?.gender || "N/A"}
+              Gender: Female
             </Typography>
 
             {renderDiagnosisTable()}
