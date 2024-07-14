@@ -66,13 +66,10 @@ const PatientDetailsForm = ({
   uploadedImages,
   handleUpload,
   setOpenCustomDialog,
-  customDialogMessage,
-  setCustomDialogMessage,
 }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [privacyPolicy, setPrivacyPolicy] = useState(false);
   const [open, setOpen] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
 
   useEffect(() => {
     // Check if all required fields are filled and privacy policy is agreed
@@ -83,41 +80,10 @@ const PatientDetailsForm = ({
     }
   }, [fullName, age, privacyPolicy]);
 
-  const onDiscoverClick = async () => {
+  const onDiscoverClick = () => {
     if (uploadedImages.length > 0) {
-      const lastImage = uploadedImages[uploadedImages.length - 1];
-      const payload = {
-        image: [
-          {
-            name: lastImage.name,
-            url: `data:image/png;base64,${lastImage.url}`,
-            type: lastImage.type,
-            size: lastImage.size,
-          },
-        ],
-      };
-
-      try {
-        const response = await fetch("http://127.0.0.1:5000/api/process-us-image", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        const result = await response.json();
-        if (!response.ok) {
-          throw new Error(result.message || "An error occurred while processing the image.");
-        }
-
-        handleUpload();
-      } catch (error) {
-        setCustomDialogMessage(error.message);
-        setOpenCustomDialog(true);
-      }
-    } else {
-      setOpenErrorDialog(true);
+      // Call the handleUpload function passed as a prop
+      handleUpload();
     }
   };
 
@@ -231,25 +197,6 @@ const PatientDetailsForm = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={openErrorDialog}
-        onClose={() => setOpenErrorDialog(false)}
-        aria-labelledby="error-dialog-title"
-        aria-describedby="error-dialog-description"
-      >
-        <DialogTitle id="error-dialog-title">{"File Upload Error"}</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">
-            No valid image uploaded. Please upload the correct image type.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenErrorDialog(false)} color="primary">
             Close
           </Button>
         </DialogActions>
