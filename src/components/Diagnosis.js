@@ -773,9 +773,7 @@ function Diagnosis() {
             <Typography sx={{ mb: 1 }}>
               Age: {formDetails?.age || "N/A"}
             </Typography>
-            <Typography sx={{ mb: 1 }}>
-              Gender: Female
-            </Typography>
+            <Typography sx={{ mb: 1 }}>Gender: Female</Typography>
 
             {renderDiagnosisTable()}
 
