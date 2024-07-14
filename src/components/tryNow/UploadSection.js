@@ -29,6 +29,7 @@ function UploadSection() {
   const [adjustmentsApplied, setAdjustmentsApplied] = useState(false);
   const [fullName, setFullName] = useState("");
   const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [openCustomDialog, setOpenCustomDialog] = useState(false);
   const [customDialogMessage, setCustomDialogMessage] = useState("");
@@ -42,7 +43,7 @@ function UploadSection() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log({ fullName, age });
+    console.log({ fullName, age, gender });
   };
 
   const handleUploadMammogram = async (imageData) => {};
@@ -91,7 +92,7 @@ function UploadSection() {
         navigate("/diagnosis", {
           state: {
             result: result,
-            formDetails: { fullName, age, gender: "Female" },
+            formDetails: { fullName, age, gender },
             fileName: fileName, // Pass the file name without extension
             type: imageData.type,
           },
@@ -178,9 +179,9 @@ function UploadSection() {
       navigate("/diagnosis", {
         state: {
           result: result,
-          formDetails: { fullName, age, gender: "Female" },
+          formDetails: { fullName, age, gender },
           fileName: diagnosis, // Pass the diagnosis instead of the file name
-          type: imageData.type,
+          type: imageData.type, 
         },
       });
     } catch (error) {
@@ -231,9 +232,9 @@ function UploadSection() {
       navigate("/diagnosis", {
         state: {
           result: result,
-          formDetails: { fullName, age, gender: "Female" },
+          formDetails: { fullName, age, gender },
           fileName: fileName, // Pass the file name without extension
-          type: imageData.type,
+          type: imageData.type, 
         },
       });
     } catch (error) {
@@ -320,11 +321,6 @@ function UploadSection() {
     };
   };
 
-  const handleCloseCustomDialog = () => {
-    setOpenCustomDialog(false);
-    navigate("/");
-  };
-
   return (
     <Container maxWidth="lg">
       {uploadedCardType ? (
@@ -387,13 +383,19 @@ function UploadSection() {
               setFullName={setFullName}
               age={age}
               setAge={setAge}
+              gender={gender}
+              setGender={setGender}
               handleSubmit={handleSubmit}
               isUploading={isUploading}
               uploadedImages={uploadedImages}
+              // handleUpload={() => {
+              //   const lastImage = uploadedImages[uploadedImages.length - 1];
+              //   handleUpload(lastImage.type);
+              // }}
               handleUpload={handleUpload}
+              openCustomDialog={openCustomDialog}
               setOpenCustomDialog={setOpenCustomDialog}
               customDialogMessage={customDialogMessage}
-              setCustomDialogMessage={setCustomDialogMessage}
             />
           )}
         </>
@@ -438,7 +440,7 @@ function UploadSection() {
       )}
       <Dialog
         open={openCustomDialog}
-        onClose={handleCloseCustomDialog}
+        onClose={() => setOpenCustomDialog(false)}
         aria-labelledby="custom-dialog-title"
         aria-describedby="custom-dialog-description"
       >
@@ -451,7 +453,7 @@ function UploadSection() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseCustomDialog}>Close</Button>
+          <Button onClick={() => setOpenCustomDialog(false)}>Close</Button>
         </DialogActions>
       </Dialog>
     </Container>
