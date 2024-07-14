@@ -61,8 +61,6 @@ const PatientDetailsForm = ({
   setFullName,
   age,
   setAge,
-  gender,
-  setGender,
   handleSubmit,
   isUploading,
   uploadedImages,
@@ -75,12 +73,12 @@ const PatientDetailsForm = ({
 
   useEffect(() => {
     // Check if all required fields are filled and privacy policy is agreed
-    if (fullName && age && gender && privacyPolicy) {
+    if (fullName && age && privacyPolicy) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
     }
-  }, [fullName, age, gender, privacyPolicy]);
+  }, [fullName, age, privacyPolicy]);
 
   const onDiscoverClick = () => {
     if (uploadedImages.length > 0) {
@@ -102,7 +100,14 @@ const PatientDetailsForm = ({
       <Typography variant="h6" gutterBottom textAlign="center">
         Include Patient's Details to Breast Cancer Analysis Report
       </Typography>
-      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <form
+        noValidate
+        autoComplete="off"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <TextField
           label="Full Name"
           variant="outlined"
@@ -125,19 +130,14 @@ const PatientDetailsForm = ({
         <TextField
           label="Gender"
           variant="outlined"
-          select
-          SelectProps={{ native: true }}
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
+          value="Female"
+          inputProps={{
+            readOnly: true,
+          }}
           fullWidth
           required
           sx={textFieldStyle}
-        >
-          <option value="">Select...</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </TextField>
+        />
         <FormGroup>
           <FormControlLabel
             control={

@@ -189,101 +189,129 @@ function Diagnosis() {
                   </>
                 )}
 
-                {result.subtype && (
+                {result.classification !== "Normal" && (
                   <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Diagnosis:
-                    </Typography>
-                    <Typography>{result.subtype}</Typography>
-                  </>
-                )}
+                    {result.subtype && (
+                      <>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          Diagnosis:
+                        </Typography>
+                        <Typography>{result.subtype}</Typography>
+                      </>
+                    )}
 
-                {result.subtype_description && (
-                  <>
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      Description:
-                    </Typography>
-                    <Typography>{result.subtype_description}</Typography>
-                  </>
-                )}
+                    {result.subtype_description && (
+                      <>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          Description:
+                        </Typography>
+                        <Typography>{result.subtype_description}</Typography>
+                      </>
+                    )}
 
-                <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                  Recommendations:
-                </Typography>
-                <Typography>{diagnosisResult.recommendation}</Typography>
-              </Grid>
-              {result.gradcam && (
-                <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      width: "70%",
-                      maxHeight: "50vh",
-                      overflow: "hidden",
-                      // margin: "0 auto",
-                    }}
-                  >
-                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-                      GRAD-CAM Visualization:
-                    </Typography>
-                    <img
-                      src={`data:image/png;base64,${result.gradcam}`}
-                      alt="Localized Lesion"
-                      style={{
-                        width: "auto",
-                        maxHeight: "100%",
-                        maxWidth: "100%",
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              )}
-            </Grid>
+                    {result.features && (
+                      <>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          Features:
+                        </Typography>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Feature</TableCell>
+                              <TableCell>Detail</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {Object.entries(result.features)
+                              .filter(
+                                ([_, detail]) => detail !== "Not specified"
+                              )
+                              .map(([feature, detail]) => (
+                                <TableRow key={feature}>
+                                  <TableCell>{feature}</TableCell>
+                                  <TableCell>{detail}</TableCell>
+                                </TableRow>
+                              ))}
+                          </TableBody>
+                        </Table>
+                      </>
+                    )}
 
-            <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
-              U-Net Segmentation Visualization
-            </Typography>
-            <Grid
-              container
-              alignItems="flex-start"
-              justifyContent="flex-start"
-              spacing={2}
-            >
-              {[
-                result.processed_original_image,
-                result.processed_mask_image,
-              ].map(
-                (imageSrc, index) =>
-                  imageSrc && (
-                    <Grid item xs={5} key={index}>
-                      <Box
-                        sx={{
-                          width: "100%",
-                          maxHeight: "50vh",
-                          overflow: "hidden",
-                          display: "flex",
-                          justifyContent: "flex-start",
-                          alignItems: "flex-start",
-                          border: "1px solid gray",
-                          marginY: "1rem",
-                        }}
-                      >
-                        <img
-                          src={`data:image/png;base64,${imageSrc}`}
-                          alt={`Localized Lesion ${index + 1}`}
-                          style={{
-                            width: "auto",
-                            maxHeight: "100%",
-                            maxWidth: "100%",
+                    {result.gradcam && (
+                      <Grid item xs={12}>
+                        <Box
+                          sx={{
+                            width: "70%",
+                            maxHeight: "50vh",
+                            overflow: "hidden",
+                            // margin: "0 auto",
                           }}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "data:image/png;base64,N/A";
-                          }}
-                        />
-                      </Box>
+                        >
+                          <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                            GRAD-CAM Visualization:
+                          </Typography>
+                          <img
+                            src={`data:image/png;base64,${result.gradcam}`}
+                            alt="Localized Lesion"
+                            style={{
+                              width: "auto",
+                              maxHeight: "100%",
+                              maxWidth: "100%",
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+                    )}
+
+                    <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                      U-Net Segmentation Visualization
+                    </Typography>
+                    <Grid
+                      container
+                      alignItems="flex-start"
+                      justifyContent="flex-start"
+                      spacing={2}
+                    >
+                      {[
+                        result.processed_original_image,
+                        result.processed_mask_image,
+                      ].map(
+                        (imageSrc, index) =>
+                          imageSrc && (
+                            <Grid item xs={5} key={index}>
+                              <Box
+                                sx={{
+                                  width: "100%",
+                                  maxHeight: "50vh",
+                                  overflow: "hidden",
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "flex-start",
+                                  border: "1px solid gray",
+                                  marginY: "1rem",
+                                }}
+                              >
+                                <img
+                                  src={`data:image/png;base64,${imageSrc}`}
+                                  alt={`Localized Lesion ${index + 1}`}
+                                  style={{
+                                    width: "auto",
+                                    maxHeight: "100%",
+                                    maxWidth: "100%",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "data:image/png;base64,N/A";
+                                  }}
+                                />
+                              </Box>
+                            </Grid>
+                          )
+                      )}
                     </Grid>
-                  )
-              )}
+                  </>
+                )}
+              </Grid>
             </Grid>
           </>
         );
@@ -746,7 +774,7 @@ function Diagnosis() {
               Age: {formDetails?.age || "N/A"}
             </Typography>
             <Typography sx={{ mb: 1 }}>
-              Gender: {formDetails?.gender || "N/A"}
+              Gender: Female
             </Typography>
 
             {renderDiagnosisTable()}
