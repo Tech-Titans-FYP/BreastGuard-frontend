@@ -134,12 +134,16 @@ function UploadSection() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
       const result = await response.json();
       console.log(result);
+
+      if (!response.ok) {
+        if (result.message) {
+          setCustomDialogMessage(result.message);
+          setOpenCustomDialog(true);
+        }
+        throw new Error(`HTTP error: ${response.status}`);
+      }
 
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
       const fileName = imageData.name.split(".").slice(0, -1).join(".");
@@ -181,11 +185,13 @@ function UploadSection() {
           result: result,
           formDetails: { fullName, age, gender },
           fileName: diagnosis, // Pass the diagnosis instead of the file name
-          type: imageData.type, 
+          type: imageData.type,
         },
       });
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
+      setCustomDialogMessage("The submitted image could not be confidently classified as an MRI image.");
+      setOpenCustomDialog(true);
     } finally {
       setIsUploading(false);
     }
@@ -234,7 +240,7 @@ function UploadSection() {
           result: result,
           formDetails: { fullName, age, gender },
           fileName: fileName, // Pass the file name without extension
-          type: imageData.type, 
+          type: imageData.type,
         },
       });
     } catch (error) {
