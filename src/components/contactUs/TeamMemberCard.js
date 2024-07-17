@@ -1,7 +1,10 @@
 import React from "react";
 import { Card, CardContent, Typography, Avatar, Grid } from "@mui/material";
 import { colors } from "../../consts/Colors";
-import team from "../../assets/team/malshi.jpg";
+import malshi from "../../assets/team/malshi.jpg";
+import sandamini from "../../assets/team/sandamini.jpg";
+import mifras from "../../assets/team/mifras.jpg";
+import sachini from "../../assets/team/sachini.jpg";
 import lochandaka from "../../assets/team/lochandaka.jpg";
 import sumudu from "../../assets/team/sumudu.jpg";
 
@@ -9,22 +12,22 @@ const teamMembers = [
   {
     name: "Mifras",
     email: "mifrasagm.19@uom.lk",
-    image: team,
+    image: mifras,
   },
   {
     name: "Malshi Kulasinghe",
     email: "kulasingheams.19@uom.lk",
-    image: team,
+    image: malshi,
   },
   {
     name: "Sandamini Kumarasinghe",
     email: "kumarasinghejasn.19@uom.lk",
-    image: team,
+    image: sandamini,
   },
   {
     name: "Sachini Kumarathunga",
     email: "kumarathungadgbs.19@uom.lk",
-    image: team,
+    image: sachini,
   },
 ];
 const TeamMemberCard = ({ name, title, email, avatarSrc, xs, sm, md }) => {

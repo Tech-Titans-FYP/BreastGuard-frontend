@@ -16,6 +16,7 @@ import { colors } from "../../consts/Colors";
 import UploadCard from "./UploadCard";
 import PatientDetailsForm from "./PatientDetailsForm";
 import ImageAdjustment from "./ImageAdjustment";
+import { HISTOPATHOLOGY, MRI, ULTRASOUND } from "../../api/config";
 
 function UploadSection() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-us-image",
+        ULTRASOUND.processUltrasoundImage,
         {
           method: "POST",
           headers: {
@@ -124,7 +125,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-mri-image",
+        MRI.processMRIImage,
         {
           method: "POST",
           headers: {
@@ -134,12 +135,16 @@ function UploadSection() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
       const result = await response.json();
       console.log(result);
+
+      if (!response.ok) {
+        if (result.message) {
+          setCustomDialogMessage(result.message);
+          setOpenCustomDialog(true);
+        }
+        throw new Error(`HTTP error: ${response.status}`);
+      }
 
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
       const fileName = imageData.name.split(".").slice(0, -1).join(".");
@@ -181,11 +186,13 @@ function UploadSection() {
           result: result,
           formDetails: { fullName, age, gender },
           fileName: diagnosis, // Pass the diagnosis instead of the file name
-          type: imageData.type, 
+          type: imageData.type,
         },
       });
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
+      setCustomDialogMessage("The submitted image could not be confidently classified as an MRI image.");
+      setOpenCustomDialog(true);
     } finally {
       setIsUploading(false);
     }
@@ -210,7 +217,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-histo-image",
+        HISTOPATHOLOGY.processHistoImage,
         {
           method: "POST",
           headers: {
@@ -234,7 +241,7 @@ function UploadSection() {
           result: result,
           formDetails: { fullName, age, gender },
           fileName: fileName, // Pass the file name without extension
-          type: imageData.type, 
+          type: imageData.type,
         },
       });
     } catch (error) {
