@@ -16,6 +16,7 @@ import { colors } from "../../consts/Colors";
 import UploadCard from "./UploadCard";
 import PatientDetailsForm from "./PatientDetailsForm";
 import ImageAdjustment from "./ImageAdjustment";
+import { HISTOPATHOLOGY, MRI, ULTRASOUND } from "../../api/config";
 
 function UploadSection() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-us-image",
+        ULTRASOUND.processUltrasoundImage,
         {
           method: "POST",
           headers: {
@@ -124,7 +125,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-mri-image",
+        MRI.processMRIImage,
         {
           method: "POST",
           headers: {
@@ -216,7 +217,7 @@ function UploadSection() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/process-histo-image",
+        HISTOPATHOLOGY.processHistoImage,
         {
           method: "POST",
           headers: {
