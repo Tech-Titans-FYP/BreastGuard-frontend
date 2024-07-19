@@ -15,7 +15,6 @@ import { colors } from "../../consts/Colors";
 const ImageAdjustment = ({
   zoom,
   setZoom,
-  rotation,
   setRotation,
   width,
   setWidth,
@@ -29,10 +28,6 @@ const ImageAdjustment = ({
   // Handlers for zoom, rotation, width, and height
   const handleZoomChange = (event, newZoom) => {
     setZoom(newZoom);
-  };
-
-  const handleRotationChange = (event, newRotation) => {
-    setRotation(newRotation);
   };
 
   const handleWidthChange = (event, newWidth) => {
@@ -64,22 +59,7 @@ const ImageAdjustment = ({
             color: colors.skyBlue,
             maxWidth: "60%",
           }}
-        />
-        <Typography id="rotation-slider" gutterBottom>
-          Rotate
-        </Typography>
-        <Slider
-          value={rotation}
-          onChange={handleRotationChange}
-          aria-labelledby="rotation-slider"
-          valueLabelDisplay="auto"
-          min={0}
-          max={360}
-          sx={{
-            color: colors.skyBlue,
-            maxWidth: "60%",
-          }}
-        />
+        />        
         <Typography id="width-slider" gutterBottom>
           Width
         </Typography>
@@ -110,33 +90,7 @@ const ImageAdjustment = ({
             maxWidth: "60%",
           }}
         />
-      </Box>
-
-      {/* <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "2rem" }}>
-        <Box sx={{
-          width: 400,
-          height: 400,
-          border: "2px solid gray",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "white",
-          overflow: "hidden"
-        }}>
-          {uploadedImages.length > 0 && (
-            <img
-              src={`data:image/png;base64,${uploadedImages[uploadedImages.length - 1].url}`}
-              alt="Uploaded"
-              style={{
-                transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                width: `${width}%`,
-                height: `${height}%`,
-                objectFit: "cover",
-              }}
-            />
-          )}
-        </Box>
-      </Box> */}
+      </Box>     
 
       <Box
         sx={{
