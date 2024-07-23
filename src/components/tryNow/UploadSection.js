@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { colors } from "../../consts/Colors";
 import UploadCard from "./UploadCard";
 import PatientDetailsForm from "./PatientDetailsForm";
-import ImageAdjustment from "./ImageAdjustment";
 import { HISTOPATHOLOGY, MRI, ULTRASOUND } from "../../api/config";
 
 function UploadSection() {
@@ -23,24 +22,11 @@ function UploadSection() {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedCardType, setUploadedCardType] = useState(null);
-  const [zoom, setZoom] = useState(50);
-  const [rotation, setRotation] = useState(0);
-  const [width, setWidth] = useState(100);
-  const [height, setHeight] = useState(100);
-  const [adjustmentsApplied, setAdjustmentsApplied] = useState(false);
   const [fullName, setFullName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
   const [openCustomDialog, setOpenCustomDialog] = useState(false);
   const [customDialogMessage, setCustomDialogMessage] = useState("");
-  const [showAdjustments, setShowAdjustments] = useState(true);
-
-  const handleConfirmAdjustments = () => {
-    applyAdjustmentsAndSetImage();
-    setShowAdjustments(false);
-    setOpenDialog(false);
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -67,16 +53,13 @@ function UploadSection() {
     };
 
     try {
-      const response = await fetch(
-        ULTRASOUND.processUltrasoundImage,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(ULTRASOUND.processUltrasoundImage, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       const result = await response.json();
       console.log(result);
@@ -94,7 +77,7 @@ function UploadSection() {
           state: {
             result: result,
             formDetails: { fullName, age, gender },
-            fileName: fileName, // Pass the file name without extension
+            fileName: fileName,
             type: imageData.type,
           },
         });
@@ -124,16 +107,13 @@ function UploadSection() {
     };
 
     try {
-      const response = await fetch(
-        MRI.processMRIImage,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(MRI.processMRIImage, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       const result = await response.json();
       console.log(result);
@@ -149,7 +129,6 @@ function UploadSection() {
       sessionStorage.setItem("uploadedImage", JSON.stringify(uploadedImages));
       const fileName = imageData.name.split(".").slice(0, -1).join(".");
 
-      // Logic to determine diagnosis based on file name or random selection
       const diagnosisMapping = {
         PG: "Paget Disease of the Breast",
         NR: "No Residual",
@@ -185,13 +164,15 @@ function UploadSection() {
         state: {
           result: result,
           formDetails: { fullName, age, gender },
-          fileName: diagnosis, // Pass the diagnosis instead of the file name
+          fileName: diagnosis,
           type: imageData.type,
         },
       });
     } catch (error) {
       console.error("There was a problem with the file upload:", error);
-      setCustomDialogMessage("The submitted image could not be confidently classified as an MRI image.");
+      setCustomDialogMessage(
+        "The submitted image could not be confidently classified as an MRI image."
+      );
       setOpenCustomDialog(true);
     } finally {
       setIsUploading(false);
@@ -216,16 +197,13 @@ function UploadSection() {
     };
 
     try {
-      const response = await fetch(
-        HISTOPATHOLOGY.processHistoImage,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(HISTOPATHOLOGY.processHistoImage, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
@@ -240,7 +218,7 @@ function UploadSection() {
         state: {
           result: result,
           formDetails: { fullName, age, gender },
-          fileName: fileName, // Pass the file name without extension
+          fileName: fileName,
           type: imageData.type,
         },
       });
@@ -298,36 +276,6 @@ function UploadSection() {
     },
   ];
 
-  const applyAdjustmentsAndSetImage = () => {
-    if (uploadedImages.length === 0) return;
-
-    const lastImage = uploadedImages[uploadedImages.length - 1];
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const image = new Image();
-    image.src = `data:image/png;base64,${lastImage.url}`;
-    image.onload = () => {
-      canvas.width = image.width;
-      canvas.height = image.height;
-
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.scale(zoom / 100, zoom / 100);
-      ctx.rotate((rotation * Math.PI) / 180);
-      ctx.drawImage(image, -image.width / 2, -image.height / 2);
-
-      const adjustedImageBase64 = canvas.toDataURL("image/png");
-
-      const updatedImages = [...uploadedImages];
-      updatedImages[uploadedImages.length - 1] = {
-        ...lastImage,
-        url: adjustedImageBase64.split(",")[1],
-      };
-      setUploadedImages(updatedImages);
-      setAdjustmentsApplied(true);
-    };
-  };
-
   return (
     <Container maxWidth="lg">
       {uploadedCardType ? (
@@ -359,52 +307,29 @@ function UploadSection() {
                   }`}
                   alt="Uploaded"
                   style={{
-                    transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                    width: `${width}%`,
-                    height: `${height}%`,
+                    width: "100%",
+                    height: "100%",
                     objectFit: "cover",
                   }}
                 />
               )}
             </Box>
           </Box>
-          {showAdjustments && (
-            <ImageAdjustment
-              zoom={zoom}
-              setZoom={setZoom}
-              rotation={rotation}
-              setRotation={setRotation}
-              width={width}
-              setWidth={setWidth}
-              height={height}
-              setHeight={setHeight}
-              openDialog={openDialog}
-              setOpenDialog={setOpenDialog}
-              handleConfirmAdjustments={handleConfirmAdjustments}
-              uploadedImages={uploadedImages}
-            />
-          )}
-          {adjustmentsApplied && (
-            <PatientDetailsForm
-              fullName={fullName}
-              setFullName={setFullName}
-              age={age}
-              setAge={setAge}
-              gender={gender}
-              setGender={setGender}
-              handleSubmit={handleSubmit}
-              isUploading={isUploading}
-              uploadedImages={uploadedImages}
-              // handleUpload={() => {
-              //   const lastImage = uploadedImages[uploadedImages.length - 1];
-              //   handleUpload(lastImage.type);
-              // }}
-              handleUpload={handleUpload}
-              openCustomDialog={openCustomDialog}
-              setOpenCustomDialog={setOpenCustomDialog}
-              customDialogMessage={customDialogMessage}
-            />
-          )}
+          <PatientDetailsForm
+            fullName={fullName}
+            setFullName={setFullName}
+            age={age}
+            setAge={setAge}
+            gender={gender}
+            setGender={setGender}
+            handleSubmit={handleSubmit}
+            isUploading={isUploading}
+            uploadedImages={uploadedImages}
+            handleUpload={handleUpload}
+            openCustomDialog={openCustomDialog}
+            setOpenCustomDialog={setOpenCustomDialog}
+            customDialogMessage={customDialogMessage}
+          />
         </>
       ) : (
         <Grid
