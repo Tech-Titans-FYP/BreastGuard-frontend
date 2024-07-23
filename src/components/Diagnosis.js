@@ -199,7 +199,6 @@ function Diagnosis() {
                         <Typography>{result.subtype}</Typography>
                       </>
                     )}
-
                     {result.subtype_description && (
                       <>
                         <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
@@ -208,7 +207,6 @@ function Diagnosis() {
                         <Typography>{result.subtype_description}</Typography>
                       </>
                     )}
-
                     {result.features && (
                       <>
                         <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
@@ -236,9 +234,21 @@ function Diagnosis() {
                         </Table>
                       </>
                     )}
-
+                    {result.tumor_size_pixels && (
+                      <>
+                        <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
+                          Tumor Size:
+                        </Typography>
+                        <Typography>
+                          {result.tumor_size_pixels} pixels
+                        </Typography>
+                        <Typography>
+                          {result.tumor_size_mm2.toFixed(2)} mm²
+                        </Typography>
+                      </>
+                    )}
                     {result.gradcam && (
-                      <Grid item xs={12}>
+                      <Grid item xs={6}>
                         <Box
                           sx={{
                             width: "70%",
@@ -262,7 +272,6 @@ function Diagnosis() {
                         </Box>
                       </Grid>
                     )}
-
                     <Typography sx={{ fontWeight: "bold", mb: 1, mt: 2 }}>
                       U-Net Segmentation Visualization
                     </Typography>
@@ -275,10 +284,11 @@ function Diagnosis() {
                       {[
                         result.processed_original_image,
                         result.processed_mask_image,
+                        result.bounding_boxes_image,
                       ].map(
                         (imageSrc, index) =>
                           imageSrc && (
-                            <Grid item xs={5} key={index}>
+                            <Grid item xs={4} key={index}>
                               <Box
                                 sx={{
                                   width: "100%",
@@ -773,9 +783,7 @@ function Diagnosis() {
             <Typography sx={{ mb: 1 }}>
               Age: {formDetails?.age || "N/A"}
             </Typography>
-            <Typography sx={{ mb: 1 }}>
-              Gender: Female
-            </Typography>
+            <Typography sx={{ mb: 1 }}>Gender: Female</Typography>
 
             {renderDiagnosisTable()}
 
